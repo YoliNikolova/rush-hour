@@ -17,6 +17,11 @@ public class UserController {
 
     private UserService userService;
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable int id) {
         UserResponseDTO user = userService.getById(id);
@@ -47,10 +52,5 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
         userService.delete(id);
-    }
-
-    @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
     }
 }

@@ -1,19 +1,24 @@
 package com.prime.rushhour.services;
 
+import com.prime.rushhour.entities.Role;
 import com.prime.rushhour.entities.User;
 import com.prime.rushhour.models.UserRequestDTO;
 import com.prime.rushhour.models.UserResponseDTO;
+import com.prime.rushhour.repository.RoleRepository;
 import com.prime.rushhour.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements BaseService<UserResponseDTO,UserRequestDTO>{
+public class UserService implements BaseService<UserResponseDTO, UserRequestDTO> {
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -38,6 +43,11 @@ public class UserService implements BaseService<UserResponseDTO,UserRequestDTO>{
     @Override
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
+        for (Role r : user.getRoles()){
+         //  if(roleRepository.findByName(r.getName()).isEmpty()){
+               roleRepository.save(r);
+          // }
+        }
         userRepository.save(user);
     }
 
@@ -57,5 +67,10 @@ public class UserService implements BaseService<UserResponseDTO,UserRequestDTO>{
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
     }
 }

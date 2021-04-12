@@ -1,10 +1,15 @@
 package com.prime.rushhour.models;
 
+import com.prime.rushhour.entities.Role;
+import java.util.List;
+
 public class UserRequestDTO {
     private String firstName;
     private String lastName;
     private String email;
     private String password;
+    private List<Role> roles;
+
 
     public UserRequestDTO(){
 
@@ -40,5 +45,13 @@ public class UserRequestDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

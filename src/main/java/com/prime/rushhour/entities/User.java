@@ -5,6 +5,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -21,17 +23,24 @@ public class User {
     private Timestamp createdDate;
     @UpdateTimestamp
     private Timestamp modifiedDate;
-    //private List<Role> roles;
     //private List<Appointment> appointments;
+
+  //  @ManyToMany(mappedBy = "users",targetEntity = Role.class,cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            joinColumns = {@JoinColumn()},
+            inverseJoinColumns = {@JoinColumn()})
+    private List<Role> roles=new ArrayList<>();
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName, String email, String password,List<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.roles=roles;
     }
 
     public String getFirstName() {
@@ -72,5 +81,13 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
