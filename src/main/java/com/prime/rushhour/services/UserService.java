@@ -44,12 +44,16 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
     @Override
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
+        List<Role> list = new ArrayList<>();
         for (Role r : user.getRoles()) {
-           // if (roleRepository.findByName(r.getName()).isEmpty()) {
-                roleRepository.save(r); // error with unique
-           // }
-            userRepository.save(user);
+            if (roleRepository.findByName(r.getName()).isEmpty()) {
+                roleRepository.save(r);
+            }else{
+                list.add(roleRepository.findByName(r.getName()).get());
+                user.setRoles(list);
+            }
         }
+        userRepository.save(user);
     }
 
     @Override
@@ -60,14 +64,12 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public UserResponseDTO registerUser(RegisterRequest request){
-        User user = modelMapper.map(request,User.class);
+    public UserResponseDTO registerUser(RegisterRequest request) {
+        User user = modelMapper.map(request, User.class);
         List<Role> list = user.getRoles();
-        Role defaultRole = new Role("ROLE_USER");
-        list.add(defaultRole);
+        list.add(roleRepository.findByName("ROLE_USER").get());
         userRepository.save(user);
-      //  roleRepository.save()
-        return modelMapper.map(user,UserResponseDTO.class);
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
     @Override
