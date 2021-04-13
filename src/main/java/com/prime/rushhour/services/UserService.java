@@ -2,6 +2,7 @@ package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Role;
 import com.prime.rushhour.entities.User;
+import com.prime.rushhour.models.RegisterRequest;
 import com.prime.rushhour.models.UserRequestDTO;
 import com.prime.rushhour.models.UserResponseDTO;
 import com.prime.rushhour.repository.RoleRepository;
@@ -43,12 +44,12 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
     @Override
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
-        for (Role r : user.getRoles()){
-         //  if(roleRepository.findByName(r.getName()).isEmpty()){
-               roleRepository.save(r);
-          // }
+        for (Role r : user.getRoles()) {
+           // if (roleRepository.findByName(r.getName()).isEmpty()) {
+                roleRepository.save(r); // error with unique
+           // }
+            userRepository.save(user);
         }
-        userRepository.save(user);
     }
 
     @Override
@@ -57,6 +58,16 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         user.setId(id);
         userRepository.save(user);
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+    public UserResponseDTO registerUser(RegisterRequest request){
+        User user = modelMapper.map(request,User.class);
+        List<Role> list = user.getRoles();
+        Role defaultRole = new Role("ROLE_USER");
+        list.add(defaultRole);
+        userRepository.save(user);
+      //  roleRepository.save()
+        return modelMapper.map(user,UserResponseDTO.class);
     }
 
     @Override
