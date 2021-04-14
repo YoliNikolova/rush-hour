@@ -19,13 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class AuthenticationController {
 
-    @Autowired
     private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtUtil jwtUtilToken;
-
-   private UserService userService;
+    private UserService userService;
 
     @RequestMapping(value ="/authenticate",method = RequestMethod.POST)
     public ResponseEntity<?> createToken(@RequestBody AuthenticationRequest authenticationRequest) throws AuthenticationException {
@@ -50,4 +46,15 @@ public class AuthenticationController {
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+
+    @Autowired
+    public void setJwtUtilToken(JwtUtil jwtUtilToken) {
+        this.jwtUtilToken = jwtUtilToken;
+    }
+
+    @Autowired
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
 }

@@ -7,7 +7,6 @@ public class RegisterRequest {
     private String password;
 
     public RegisterRequest(){
-
     }
 
     public String getEmail() {

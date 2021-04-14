@@ -1,6 +1,7 @@
 package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Role;
+import com.prime.rushhour.entities.RoleType;
 import com.prime.rushhour.entities.User;
 import com.prime.rushhour.models.RegisterRequest;
 import com.prime.rushhour.models.UserRequestDTO;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +47,7 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
-        checkRoles(user, list);
+        userRepository.save(setRolesForUser(user, list));
     }
 
     @Override
@@ -53,20 +55,21 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
         user.setId(id);
-        checkRoles(user, list);
+        userRepository.save(setRolesForUser(user, list));
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    private void checkRoles(User user, List<Role> list) {
+    private User setRolesForUser(User user, List<Role> list) {
         for (Role r : user.getRoles()) {
-            if (roleRepository.findByName(r.getName()).isEmpty()) {
+            Optional<Role> currentRole = roleRepository.findByName(RoleType.valueOf(r.getName()));
+            if (currentRole.isEmpty()) {
                 list.add(r);
             }else{
-                list.add(roleRepository.findByName(r.getName()).get());
+                list.add(currentRole.get());
             }
         }
         user.setRoles(list);
-        userRepository.save(user);
+        return user;
     }
 
     public UserResponseDTO registerUser(RegisterRequest request){
@@ -74,8 +77,8 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             return null;
         }
-        List<Role> list = user.getRoles();
-        list.add(roleRepository.findByName("ROLE_USER").get());
+        List<Role> userRoles = Collections.singletonList(roleRepository.findByName(RoleType.ROLE_USER).get());
+        user.setRoles(userRoles);
         userRepository.save(user);
         return modelMapper.map(user, UserResponseDTO.class);
     }

@@ -16,7 +16,7 @@ public class RoleController {
 
     @RequestMapping("/home")
     public String homePage() {
-        roleService.startFunc();
+        roleService.startApp();
         return "Hello";
     }
 
