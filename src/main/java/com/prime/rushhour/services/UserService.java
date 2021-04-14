@@ -69,8 +69,11 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         userRepository.save(user);
     }
 
-    public UserResponseDTO registerUser(RegisterRequest request) {
+    public UserResponseDTO registerUser(RegisterRequest request){
         User user = modelMapper.map(request, User.class);
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            return null;
+        }
         List<Role> list = user.getRoles();
         list.add(roleRepository.findByName("ROLE_USER").get());
         userRepository.save(user);

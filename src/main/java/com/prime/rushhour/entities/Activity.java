@@ -1,6 +1,7 @@
 package com.prime.rushhour.entities;
 
 public class Activity {
+    private Integer id;
     private String name;
     private double duration;
     private double price;

@@ -7,12 +7,14 @@ import com.prime.rushhour.models.UserResponseDTO;
 import com.prime.rushhour.security.JwtUtil;
 import com.prime.rushhour.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class AuthenticationController {
@@ -23,7 +25,7 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtilToken;
 
-    private UserService userService;
+   private UserService userService;
 
     @RequestMapping(value ="/authenticate",method = RequestMethod.POST)
     public ResponseEntity<?> createToken(@RequestBody AuthenticationRequest authenticationRequest) throws AuthenticationException {
@@ -35,16 +37,17 @@ public class AuthenticationController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
+    @RequestMapping(value="/register",method = RequestMethod.POST)
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody RegisterRequest request){
+        UserResponseDTO user = userService.registerUser(request);
+        if(user==null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        return ResponseEntity.ok(user);
+    }
+
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
-
-    @RequestMapping(value="/register",method = RequestMethod.POST)
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody RegisterRequest request){
-        UserResponseDTO user = userService.registerUser(request);
-        return ResponseEntity.ok(user);
-    }
-
-
 }
