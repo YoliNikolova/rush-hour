@@ -45,23 +45,28 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
-        for (Role r : user.getRoles()) {
-            if (roleRepository.findByName(r.getName()).isEmpty()) {
-                roleRepository.save(r);
-            }else{
-                list.add(roleRepository.findByName(r.getName()).get());
-                user.setRoles(list);
-            }
-        }
-        userRepository.save(user);
+        checkRoles(user, list);
     }
 
     @Override
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
         User user = modelMapper.map(newUser, User.class);
+        List<Role> list = new ArrayList<>();
         user.setId(id);
-        userRepository.save(user);
+        checkRoles(user, list);
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+    private void checkRoles(User user, List<Role> list) {
+        for (Role r : user.getRoles()) {
+            if (roleRepository.findByName(r.getName()).isEmpty()) {
+                list.add(r);
+            }else{
+                list.add(roleRepository.findByName(r.getName()).get());
+            }
+        }
+        user.setRoles(list);
+        userRepository.save(user);
     }
 
     public UserResponseDTO registerUser(RegisterRequest request) {
