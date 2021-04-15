@@ -56,5 +56,4 @@ public class AuthenticationController {
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
-
 }

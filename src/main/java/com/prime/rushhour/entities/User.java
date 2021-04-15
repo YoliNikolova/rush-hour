@@ -23,9 +23,10 @@ public class User {
     private Timestamp createdDate;
     @UpdateTimestamp
     private Timestamp modifiedDate;
-    //private List<Appointment> appointments;
 
-  //  @ManyToMany(mappedBy = "users",targetEntity = Role.class,cascade = {CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user")
+    private List<Appointment> appointments;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             joinColumns = {@JoinColumn()},

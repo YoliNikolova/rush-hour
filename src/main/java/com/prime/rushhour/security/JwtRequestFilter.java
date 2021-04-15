@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+@PropertySource("classpath:application.properties")
 public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private MyUserDetailsService userDetailsService;
@@ -27,10 +29,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 
-    @Value("Authorization")
+    @Value("${jwt.header.string}")
     private String headerName;
 
-    @Value("Bearer")
+    @Value("${jwt.token.prefix}")
     private String tokenPrefix;
 
     @Override

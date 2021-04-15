@@ -18,14 +18,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements BaseService<UserResponseDTO, UserRequestDTO> {
+public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
     public UserResponseDTO getById(int id) {
         User user = userRepository.getOne(id);
         if (!userRepository.existsById(id)) {
@@ -35,21 +34,18 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         return responseDTO;
     }
 
-    @Override
     public List<UserResponseDTO> getAll() {
         return userRepository.findAll().stream()
                 .map(u -> modelMapper.map(u, UserResponseDTO.class))
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
         userRepository.save(setRolesForUser(user, list));
     }
 
-    @Override
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
@@ -76,13 +72,18 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             return null;
         }
-        List<Role> userRoles = Collections.singletonList(roleRepository.findByName("ROLE_USER").get());
+        Optional<Role> roleUser = roleRepository.findByName("ROLE_USER");
+        List<Role> userRoles;
+        if(roleUser.isEmpty()){
+             userRoles = Collections.singletonList(new Role("ROLE_USER"));
+        }else{
+            userRoles = Collections.singletonList(roleUser.get());
+        }
         user.setRoles(userRoles);
         userRepository.save(user);
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    @Override
     public void delete(int id) {
         userRepository.deleteById(id);
     }

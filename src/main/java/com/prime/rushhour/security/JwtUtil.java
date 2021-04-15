@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -11,16 +12,17 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class JwtUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
 
-    @Value("1800000")
+    @Value("${jwt.token.validity}")
     private Long expiration;
 
-    @Value("secret")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
-    @Value("Bearer")
+    @Value("${jwt.token.prefix}")
     private String tokenType;
 
     public String extractUsername(String jwt) {

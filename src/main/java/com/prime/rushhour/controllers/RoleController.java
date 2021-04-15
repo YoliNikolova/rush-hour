@@ -14,12 +14,6 @@ import java.util.stream.Collectors;
 public class RoleController {
     private RoleService roleService;
 
-    @RequestMapping("/home")
-    public String homePage() {
-        roleService.startApp();
-        return "Hello";
-    }
-
     @RequestMapping("/roles")
     public List<String> getAllRoles() {
         return roleService.getAll().stream().map(Role::getName).collect(Collectors.toList());
