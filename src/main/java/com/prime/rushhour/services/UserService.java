@@ -1,7 +1,6 @@
 package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Role;
-import com.prime.rushhour.entities.RoleType;
 import com.prime.rushhour.entities.User;
 import com.prime.rushhour.models.RegisterRequest;
 import com.prime.rushhour.models.UserRequestDTO;
@@ -61,7 +60,7 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
 
     private User setRolesForUser(User user, List<Role> list) {
         for (Role r : user.getRoles()) {
-            Optional<Role> currentRole = roleRepository.findByName(RoleType.valueOf(r.getName()));
+            Optional<Role> currentRole = roleRepository.findByName(r.getName());
             if (currentRole.isEmpty()) {
                 list.add(r);
             }else{
@@ -77,7 +76,7 @@ public class UserService implements BaseService<UserResponseDTO, UserRequestDTO>
         if(userRepository.findByEmail(user.getEmail()).isPresent()){
             return null;
         }
-        List<Role> userRoles = Collections.singletonList(roleRepository.findByName(RoleType.ROLE_USER).get());
+        List<Role> userRoles = Collections.singletonList(roleRepository.findByName("ROLE_USER").get());
         user.setRoles(userRoles);
         userRepository.save(user);
         return modelMapper.map(user, UserResponseDTO.class);

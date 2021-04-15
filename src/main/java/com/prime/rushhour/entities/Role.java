@@ -10,8 +10,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Enumerated(EnumType.STRING)
-    private RoleType name;
+    private String name;
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
@@ -19,16 +18,16 @@ public class Role {
     public Role() {
     }
 
-    public Role(RoleType name) {
+    public Role(String name) {
         this.name = name;
     }
 
     public String getName() {
-        return this.name.name();
+        return this.name;
     }
 
     public void setName(String name) {
-        this.name = RoleType.valueOf(name);
+        this.name = name;
     }
 
     public List<User> getUsers() {
