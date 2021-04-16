@@ -1,12 +1,23 @@
 package com.prime.rushhour.entities;
 
+import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
+@Entity
 public class Appointment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private Date startDate;
     private Date endDate;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn()
     private User user;
-    // activities
+
+    @ManyToMany(mappedBy = "appointments")
+    private List<Activity> activities;
 
     public Date getStartDate() {
         return startDate;
@@ -30,5 +41,13 @@ public class Appointment {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 }

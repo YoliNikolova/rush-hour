@@ -1,10 +1,23 @@
 package com.prime.rushhour.entities;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
 public class Activity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
     private String name;
     private double duration;
     private double price;
-    //private List<Appointment> appointments;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            joinColumns = {@JoinColumn()},
+            inverseJoinColumns = {@JoinColumn()})
+    private List<Appointment> appointments=new ArrayList<>();
 
     public String getName() {
         return name;
@@ -28,5 +41,13 @@ public class Activity {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }
