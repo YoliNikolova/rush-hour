@@ -8,7 +8,7 @@ import java.util.List;
 public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private int id;
     private String name;
     private double duration;
     private double price;
@@ -41,5 +41,13 @@ public class Activity {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }

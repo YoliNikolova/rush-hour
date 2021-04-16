@@ -8,7 +8,7 @@ import java.util.List;
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private int id;
     private Date startDate;
     private Date endDate;
 

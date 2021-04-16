@@ -1,11 +1,11 @@
 package com.prime.rushhour.models;
 
-public class ActivityRequestDTO {
+public class ActivityDTO {
     private String name;
     private double duration;
     private double price;
 
-    public ActivityRequestDTO(){
+    public ActivityDTO(){
 
     }
 

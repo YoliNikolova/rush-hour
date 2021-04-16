@@ -26,11 +26,11 @@ public class UserService {
     private ModelMapper modelMapper;
 
     public UserResponseDTO getById(int id) {
-        User user = userRepository.getOne(id);
-        if (!userRepository.existsById(id)) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()){
             return null;
         }
-        UserResponseDTO responseDTO = modelMapper.map(user, UserResponseDTO.class);
+        UserResponseDTO responseDTO = modelMapper.map(user.get(), UserResponseDTO.class);
         return responseDTO;
     }
 
@@ -48,6 +48,9 @@ public class UserService {
 
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
         User user = modelMapper.map(newUser, User.class);
+        if(!userRepository.existsById(user.getId())){
+            return null;
+        }
         List<Role> list = new ArrayList<>();
         user.setId(id);
         userRepository.save(setRolesForUser(user, list));
@@ -59,7 +62,7 @@ public class UserService {
             Optional<Role> currentRole = roleRepository.findByName(r.getName());
             if (currentRole.isEmpty()) {
                 list.add(r);
-            }else{
+            } else {
                 list.add(currentRole.get());
             }
         }
@@ -67,16 +70,16 @@ public class UserService {
         return user;
     }
 
-    public UserResponseDTO registerUser(RegisterRequest request){
+    public UserResponseDTO registerUser(RegisterRequest request) {
         User user = modelMapper.map(request, User.class);
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return null;
         }
         Optional<Role> roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles;
-        if(roleUser.isEmpty()){
-             userRoles = Collections.singletonList(new Role("ROLE_USER"));
-        }else{
+        if (roleUser.isEmpty()) {
+            userRoles = Collections.singletonList(new Role("ROLE_USER"));
+        } else {
             userRoles = Collections.singletonList(roleUser.get());
         }
         user.setRoles(userRoles);
@@ -84,8 +87,12 @@ public class UserService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public void delete(int id) {
+    public boolean delete(int id) {
+        if(!userRepository.existsById(id)){
+           return false;
+        }
         userRepository.deleteById(id);
+        return true;
     }
 
     @Autowired
