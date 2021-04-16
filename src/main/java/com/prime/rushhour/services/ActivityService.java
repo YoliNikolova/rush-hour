@@ -37,7 +37,7 @@ public class ActivityService {
         Activity activity = modelMapper.map(dto, Activity.class);
         activityRepository.save(activity);
     }
-    
+
     public ActivityDTO updateById(ActivityDTO dto, int id) {
         Activity activity = modelMapper.map(dto, Activity.class);
         activity.setId(id);
