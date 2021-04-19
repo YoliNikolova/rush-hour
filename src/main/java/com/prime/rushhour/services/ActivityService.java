@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +26,11 @@ public class ActivityService {
     }
 
     public ActivityDTO getById(int id) {
-        Activity activity = activityRepository.getOne(id);
-        if (!activityRepository.existsById(id)) {
+        Optional<Activity> activity = activityRepository.findById(id);
+        if (activity.isEmpty()) {
             return null;
         }
-        ActivityDTO activityDTO = modelMapper.map(activity, ActivityDTO.class);
+        ActivityDTO activityDTO = modelMapper.map(activity.get(), ActivityDTO.class);
         return activityDTO;
     }
 
@@ -40,13 +41,20 @@ public class ActivityService {
 
     public ActivityDTO updateById(ActivityDTO dto, int id) {
         Activity activity = modelMapper.map(dto, Activity.class);
+        if(!activityRepository.existsById(id)){
+           return null;
+        }
         activity.setId(id);
         activityRepository.save(activity);
         return modelMapper.map(activity, ActivityDTO.class);
     }
 
-    public void delete(int id) {
+    public boolean delete(int id) {
+        if(!activityRepository.existsById(id)){
+            return false;
+        }
         activityRepository.deleteById(id);
+        return true;
     }
 
     @Autowired

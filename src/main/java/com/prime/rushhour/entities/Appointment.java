@@ -12,11 +12,14 @@ public class Appointment {
     private Date startDate;
     private Date endDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn()
     private User user;
 
-    @ManyToMany(mappedBy = "appointments")
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            joinColumns = {@JoinColumn()},
+            inverseJoinColumns = {@JoinColumn()})
     private List<Activity> activities;
 
     public Date getStartDate() {

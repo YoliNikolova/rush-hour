@@ -13,10 +13,7 @@ public class Activity {
     private double duration;
     private double price;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            joinColumns = {@JoinColumn()},
-            inverseJoinColumns = {@JoinColumn()})
+    @ManyToMany(mappedBy = "activities")
     private List<Appointment> appointments=new ArrayList<>();
 
     public String getName() {
