@@ -16,6 +16,14 @@ public class Activity {
     @ManyToMany(mappedBy = "activities")
     private List<Appointment> appointments=new ArrayList<>();
 
+    public Activity(){
+
+    }
+
+    public Activity(String name){
+        this.name=name;
+    }
+
     public String getName() {
         return name;
     }
@@ -44,7 +52,7 @@ public class Activity {
         this.id = id;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 }

@@ -2,6 +2,8 @@ package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Role;
 import com.prime.rushhour.entities.User;
+import com.prime.rushhour.exception.ThisEmailAlreadyExistsException;
+import com.prime.rushhour.exception.UserNotFoundException;
 import com.prime.rushhour.models.RegisterRequest;
 import com.prime.rushhour.models.UserRequestDTO;
 import com.prime.rushhour.models.UserResponseDTO;
@@ -26,12 +28,8 @@ public class UserService {
     private ModelMapper modelMapper;
 
     public UserResponseDTO getById(int id) {
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()){
-            return null;
-        }
-        UserResponseDTO responseDTO = modelMapper.map(user.get(), UserResponseDTO.class);
-        return responseDTO;
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
     public List<UserResponseDTO> getAll() {
@@ -49,7 +47,7 @@ public class UserService {
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
         User user = modelMapper.map(newUser, User.class);
         if(!userRepository.existsById(user.getId())){
-            return null;
+            throw new UserNotFoundException();
         }
         List<Role> list = new ArrayList<>();
         user.setId(id);
@@ -73,7 +71,7 @@ public class UserService {
     public UserResponseDTO registerUser(RegisterRequest request) {
         User user = modelMapper.map(request, User.class);
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return null;
+            throw new ThisEmailAlreadyExistsException();
         }
         Optional<Role> roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles;
@@ -87,12 +85,11 @@ public class UserService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public boolean delete(int id) {
+    public void delete(int id) {
         if(!userRepository.existsById(id)){
-           return false;
+           throw new UserNotFoundException();
         }
         userRepository.deleteById(id);
-        return true;
     }
 
     @Autowired

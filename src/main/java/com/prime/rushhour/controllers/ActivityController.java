@@ -5,8 +5,8 @@ import com.prime.rushhour.services.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,9 +18,6 @@ public class ActivityController {
     @GetMapping("/{id}")
     public ResponseEntity<ActivityDTO> getActivityById(@PathVariable int id){
         ActivityDTO activity = activityService.getById(id);
-        if(activity == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
         return ResponseEntity.ok(activity);
     }
 
@@ -29,26 +26,24 @@ public class ActivityController {
         return activityService.getAll();
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addNewActivity(@RequestBody ActivityDTO activity){
         activityService.add(activity);
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
     public ResponseEntity<ActivityDTO> updateUser(@RequestBody ActivityDTO activity, @PathVariable int id) {
         ActivityDTO updateActivity = activityService.updateById(activity, id);
-        if (updateActivity == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
         return ResponseEntity.ok(updateActivity);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
-        if (!activityService.delete(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        activityService.delete(id);
     }
 
     @Autowired

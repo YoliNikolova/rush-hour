@@ -2,6 +2,7 @@ package com.prime.rushhour.entities;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,7 @@ public class Appointment {
     @JoinTable(
             joinColumns = {@JoinColumn()},
             inverseJoinColumns = {@JoinColumn()})
-    private List<Activity> activities;
+    private List<Activity> activities=new ArrayList<>();
 
     public Date getStartDate() {
         return startDate;
@@ -52,5 +53,9 @@ public class Appointment {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

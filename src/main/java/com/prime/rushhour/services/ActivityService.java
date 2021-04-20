@@ -1,14 +1,13 @@
 package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Activity;
+import com.prime.rushhour.exception.ActivityNotFoundException;
 import com.prime.rushhour.models.ActivityDTO;
 import com.prime.rushhour.repository.ActivityRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,12 +25,8 @@ public class ActivityService {
     }
 
     public ActivityDTO getById(int id) {
-        Optional<Activity> activity = activityRepository.findById(id);
-        if (activity.isEmpty()) {
-            return null;
-        }
-        ActivityDTO activityDTO = modelMapper.map(activity.get(), ActivityDTO.class);
-        return activityDTO;
+        Activity activity = activityRepository.findById(id).orElseThrow(ActivityNotFoundException::new);
+        return modelMapper.map(activity, ActivityDTO.class);
     }
 
     public void add(ActivityDTO dto) {
@@ -42,19 +37,18 @@ public class ActivityService {
     public ActivityDTO updateById(ActivityDTO dto, int id) {
         Activity activity = modelMapper.map(dto, Activity.class);
         if(!activityRepository.existsById(id)){
-           return null;
+           throw new ActivityNotFoundException();
         }
         activity.setId(id);
         activityRepository.save(activity);
         return modelMapper.map(activity, ActivityDTO.class);
     }
 
-    public boolean delete(int id) {
+    public void delete(int id) {
         if(!activityRepository.existsById(id)){
-            return false;
+            throw new ActivityNotFoundException();
         }
         activityRepository.deleteById(id);
-        return true;
     }
 
     @Autowired
