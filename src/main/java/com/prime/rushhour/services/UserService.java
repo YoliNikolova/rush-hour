@@ -46,7 +46,7 @@ public class UserService {
 
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
         User user = modelMapper.map(newUser, User.class);
-        if(!userRepository.existsById(user.getId())){
+        if (!userRepository.existsById(user.getId())) {
             throw new UserNotFoundException();
         }
         List<Role> list = new ArrayList<>();
@@ -86,8 +86,8 @@ public class UserService {
     }
 
     public void delete(int id) {
-        if(!userRepository.existsById(id)){
-           throw new UserNotFoundException();
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException();
         }
         userRepository.deleteById(id);
     }

@@ -7,6 +7,7 @@ import com.prime.rushhour.repository.ActivityRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,8 @@ public class ActivityService {
 
     public ActivityDTO updateById(ActivityDTO dto, int id) {
         Activity activity = modelMapper.map(dto, Activity.class);
-        if(!activityRepository.existsById(id)){
-           throw new ActivityNotFoundException();
+        if (!activityRepository.existsById(id)) {
+            throw new ActivityNotFoundException();
         }
         activity.setId(id);
         activityRepository.save(activity);
@@ -45,7 +46,7 @@ public class ActivityService {
     }
 
     public void delete(int id) {
-        if(!activityRepository.existsById(id)){
+        if (!activityRepository.existsById(id)) {
             throw new ActivityNotFoundException();
         }
         activityRepository.deleteById(id);

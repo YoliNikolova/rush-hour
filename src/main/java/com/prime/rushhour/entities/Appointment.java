@@ -21,7 +21,7 @@ public class Appointment {
     @JoinTable(
             joinColumns = {@JoinColumn()},
             inverseJoinColumns = {@JoinColumn()})
-    private List<Activity> activities=new ArrayList<>();
+    private List<Activity> activities = new ArrayList<>();
 
     public Date getStartDate() {
         return startDate;
@@ -57,5 +57,9 @@ public class Appointment {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 }
