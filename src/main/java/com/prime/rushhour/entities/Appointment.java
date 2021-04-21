@@ -2,6 +2,7 @@ package com.prime.rushhour.entities;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,12 +13,15 @@ public class Appointment {
     private Date startDate;
     private Date endDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn()
     private User user;
 
-    @ManyToMany(mappedBy = "appointments")
-    private List<Activity> activities;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            joinColumns = {@JoinColumn()},
+            inverseJoinColumns = {@JoinColumn()})
+    private List<Activity> activities=new ArrayList<>();
 
     public Date getStartDate() {
         return startDate;
@@ -49,5 +53,9 @@ public class Appointment {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

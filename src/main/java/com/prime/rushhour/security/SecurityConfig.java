@@ -50,6 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register").permitAll()
                 .antMatchers("/roles/**").hasRole("ADMIN")
                 .antMatchers("/users/**").hasRole("ADMIN")
+                .antMatchers("/activities/**").hasAnyRole("ADMIN","USER")
+                .antMatchers("/appointments/**").hasAnyRole("USER","ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new BasicAuthenticationEntryPoint())
