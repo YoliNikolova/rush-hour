@@ -3,10 +3,9 @@ package com.prime.rushhour.services;
 import com.prime.rushhour.entities.Activity;
 import com.prime.rushhour.entities.Appointment;
 import com.prime.rushhour.entities.User;
-import com.prime.rushhour.exception.ActivityNotFoundException;
-import com.prime.rushhour.exception.AppointmentNotFoundException;
-import com.prime.rushhour.exception.ForbiddenException;
-import com.prime.rushhour.models.AppointmentDTO;
+import com.prime.rushhour.exception.*;
+import com.prime.rushhour.models.AppointmentRequestDTO;
+import com.prime.rushhour.models.AppointmentResponseDTO;
 import com.prime.rushhour.repository.ActivityRepository;
 import com.prime.rushhour.repository.AppointmentRepository;
 import com.prime.rushhour.repository.UserRepository;
@@ -15,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,61 +29,80 @@ public class AppointmentService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<AppointmentDTO> getAll() {
-        return appointmentRepository.findAll().stream()
-                .map(a -> modelMapper.map(a, AppointmentDTO.class))
-                .collect(Collectors.toList());
+    public List<AppointmentResponseDTO> getAll(MyUserDetails currentUser) {
+        if (currentUser.hasRole("ROLE_ADMIN")) {
+            return appointmentRepository.findAll().stream()
+                    .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
+                    .collect(Collectors.toList());
+        } else {
+            List<Appointment> appointments = appointmentRepository.findAllByUserId(currentUser.getId());
+            return appointments.stream()
+                    .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
+                    .collect(Collectors.toList());
+        }
     }
 
-    public AppointmentDTO getById(int id, MyUserDetails currentUser) {
+    public AppointmentResponseDTO getById(int id, MyUserDetails currentUser) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
         if (appointment.getUser().getId() == currentUser.getId() || currentUser.hasRole("ROLE_ADMIN")) {
-            return modelMapper.map(appointment, AppointmentDTO.class);
+            return modelMapper.map(appointment, AppointmentResponseDTO.class);
         } else {
             throw new ForbiddenException();
         }
     }
 
-    public List<AppointmentDTO> getAllByUserId(int id) {
-        List<Appointment> appointments = appointmentRepository.findAllByUserId(id);
-        return appointments.stream()
-                .map(a -> modelMapper.map(a, AppointmentDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    public AppointmentDTO add(AppointmentDTO dto, int currentId) {
+    public AppointmentResponseDTO add(AppointmentRequestDTO dto, int currentId) {
         Appointment app = modelMapper.map(dto, Appointment.class);
-        Optional<User> getCurrentUser = userRepository.findById(currentId);
-        Appointment appointment = setActivities(app);
-        appointment.setUser(getCurrentUser.get());
+        Optional<User> currentUser = userRepository.findById(currentId);
+        app.setUser(currentUser.get());
+        Appointment appointment = calculateEndDate(app);
+        checkForOverlap(appointment, currentId);
         appointmentRepository.save(appointment);
-        return modelMapper.map(appointment, AppointmentDTO.class);
+        return modelMapper.map(appointment, AppointmentResponseDTO.class);
     }
 
-    public AppointmentDTO updateById(AppointmentDTO dto, int id, MyUserDetails currentUser) {
+    public AppointmentResponseDTO updateById(AppointmentRequestDTO dto, int id, MyUserDetails currentUser) {
         Appointment oldAppointment = appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
-        if (oldAppointment.getUser().getId() == currentUser.getId() || currentUser.hasRole("ROLE_ADMIN")) {
-            Appointment app = modelMapper.map(dto, Appointment.class);
+        Appointment app = modelMapper.map(dto, Appointment.class);
+        if (currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
+            User user = userRepository.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new);
+            app.setUser(user);
+        } else if (oldAppointment.getUser().getId() == currentUser.getId()) {
             app.setUser(oldAppointment.getUser());
-            app.setId(oldAppointment.getId());
-            Appointment newApp = setActivities(app);
-            appointmentRepository.save(newApp);
-            return modelMapper.map(newApp, AppointmentDTO.class);
         } else {
             throw new ForbiddenException();
         }
+        app.setId(oldAppointment.getId());
+        Appointment newApp = calculateEndDate(app);
+        checkForOverlap(newApp, app.getUser().getId());
+        appointmentRepository.save(newApp);
+        return modelMapper.map(newApp, AppointmentResponseDTO.class);
     }
 
-    private Appointment setActivities(Appointment app) {
+    private void checkForOverlap(Appointment appointment, int userId) {
+        for (Appointment existingApp : appointmentRepository.findAllByUserId(userId)) {
+            if (!((appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getEndDate().isBefore(existingApp.getStartDate())) ||
+                    (appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getStartDate().isAfter(existingApp.getEndDate())))) {
+                throw new AppointmentExistsException();
+            }
+        }
+    }
+
+    private Appointment calculateEndDate(Appointment app) {
         List<Activity> list = new ArrayList<>();
+        int totalMinutes = 0;
         for (Activity activity : app.getActivities()) {
             Optional<Activity> currentActivity = activityRepository.findByName(activity.getName());
-            currentActivity.ifPresent(list::add);
+            if (currentActivity.isPresent()) {
+                list.add(currentActivity.get());
+                totalMinutes = totalMinutes + currentActivity.get().getDuration();
+            }
         }
         if (list.isEmpty()) {
             throw new ActivityNotFoundException(); // not found these activities???
         }
         app.setActivities(list);
+        app.setEndDate(app.getStartDate().plusMinutes(totalMinutes));
         return app;
     }
 

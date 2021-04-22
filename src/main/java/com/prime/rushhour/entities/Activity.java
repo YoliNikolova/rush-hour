@@ -10,7 +10,7 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    private double duration;
+    private int duration;
     private double price;
 
     @ManyToMany(mappedBy = "activities")
@@ -32,11 +32,11 @@ public class Activity {
         this.name = name;
     }
 
-    public double getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 

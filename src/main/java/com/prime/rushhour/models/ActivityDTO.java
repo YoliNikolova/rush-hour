@@ -2,7 +2,7 @@ package com.prime.rushhour.models;
 
 public class ActivityDTO {
     private String name;
-    private double duration;
+    private int duration;
     private double price;
 
     public ActivityDTO(){
@@ -17,11 +17,11 @@ public class ActivityDTO {
         this.name = name;
     }
 
-    public double getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
