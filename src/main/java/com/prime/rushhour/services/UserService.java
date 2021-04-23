@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     public UserResponseDTO getById(int id) {
@@ -100,5 +98,10 @@ public class UserService {
     @Autowired
     public void setRoleRepository(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

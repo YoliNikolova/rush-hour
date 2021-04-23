@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 public class ActivityService {
 
     private ActivityRepository activityRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     public List<ActivityDTO> getAll() {
@@ -55,5 +53,10 @@ public class ActivityService {
     @Autowired
     public void setActivityRepository(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

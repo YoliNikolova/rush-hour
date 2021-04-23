@@ -25,8 +25,6 @@ public class AppointmentService {
     private AppointmentRepository appointmentRepository;
     private UserRepository userRepository;
     private ActivityRepository activityRepository;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     public List<AppointmentResponseDTO> getAll(MyUserDetails currentUser) {
@@ -132,5 +130,10 @@ public class AppointmentService {
     @Autowired
     public void setActivityRepository(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }
