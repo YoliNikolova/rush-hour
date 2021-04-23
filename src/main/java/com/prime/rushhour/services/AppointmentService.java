@@ -12,6 +12,9 @@ import com.prime.rushhour.repository.UserRepository;
 import com.prime.rushhour.security.MyUserDetails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,14 +30,16 @@ public class AppointmentService {
     private ActivityRepository activityRepository;
     private ModelMapper modelMapper;
 
-    public List<AppointmentResponseDTO> getAll(MyUserDetails currentUser) {
+    public List<AppointmentResponseDTO> getAll(int pageNo, int pageSize, MyUserDetails currentUser) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
         if (currentUser.hasRole("ROLE_ADMIN")) {
-            return appointmentRepository.findAll().stream()
-                    .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
+            Page<Appointment> pagedResult = appointmentRepository.findAll(paging);
+            return pagedResult.stream()
+                    .map(a->modelMapper.map(a,AppointmentResponseDTO.class))
                     .collect(Collectors.toList());
         } else {
-            List<Appointment> appointments = appointmentRepository.findAllByUserId(currentUser.getId());
-            return appointments.stream()
+            Page<Appointment> pagedResult = appointmentRepository.findAllByUserId(currentUser.getId(),paging);
+            return pagedResult.stream()
                     .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
                     .collect(Collectors.toList());
         }

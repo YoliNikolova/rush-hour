@@ -18,9 +18,9 @@ public class AppointmentController {
 
     private AppointmentService appointmentService;
 
-    @GetMapping
-    public List<AppointmentResponseDTO> getAllAppointments(@AuthenticationPrincipal MyUserDetails currentUser) {
-        return appointmentService.getAll(currentUser);
+    @GetMapping("/{pageNo}/{pageSize}")
+    public List<AppointmentResponseDTO> getAllAppointments(@PathVariable int pageNo,@PathVariable int pageSize,@AuthenticationPrincipal MyUserDetails currentUser) {
+        return appointmentService.getAll(pageNo,pageSize,currentUser);
     }
 
     @GetMapping("/{id}")
