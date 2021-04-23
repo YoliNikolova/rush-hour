@@ -41,7 +41,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponseDTO getById(int id, MyUserDetails currentUser) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(id));
         if (appointment.getUser().getId() == currentUser.getId() || currentUser.hasRole("ROLE_ADMIN")) {
             return modelMapper.map(appointment, AppointmentResponseDTO.class);
         } else {
@@ -60,7 +60,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponseDTO updateById(AppointmentRequestDTO dto, int id, MyUserDetails currentUser) {
-        Appointment oldAppointment = appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
+        Appointment oldAppointment = appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(id));
         Appointment app = modelMapper.map(dto, Appointment.class);
         if (currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
             User user = userRepository.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -97,11 +97,10 @@ public class AppointmentService {
             Optional<Activity> currentActivity = activityRepository.findByName(activity.getName());
             if (currentActivity.isPresent()) {
                 list.add(currentActivity.get());
-                totalMinutes = totalMinutes + currentActivity.get().getDuration();
+                totalMinutes = totalMinutes + currentActivity.get().getMinutes();
+            } else {
+                throw new ActivityNotFoundException();
             }
-        }
-        if (list.isEmpty()) {
-            throw new ActivityNotFoundException();
         }
         app.setActivities(list);
         app.setEndDate(app.getStartDate().plusMinutes(totalMinutes));
@@ -109,7 +108,7 @@ public class AppointmentService {
     }
 
     public void delete(int id, MyUserDetails currentUser) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(AppointmentNotFoundException::new);
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(id));
         if (appointment.getUser().getId() == currentUser.getId() || currentUser.hasRole("ROLE_ADMIN")) {
             appointmentRepository.deleteById(id);
         } else {
