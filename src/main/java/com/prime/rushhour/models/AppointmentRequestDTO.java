@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.prime.rushhour.entities.Activity;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.annotation.Secured;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,7 +41,6 @@ public class AppointmentRequestDTO {
         return userId;
     }
 
-    @Secured("ROLE_ADMIN")
     public void setUserId(int userId) {
         this.userId = userId;
     }

@@ -67,6 +67,8 @@ public class AppointmentService {
         if (currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
             User user = userRepository.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new);
             app.setUser(user);
+        } else if (!currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
+            throw new ForbiddenException("You have no right to set userId!");
         } else if (oldAppointment.getUser().getId() == currentUser.getId()) {
             app.setUser(oldAppointment.getUser());
         } else {
@@ -81,9 +83,11 @@ public class AppointmentService {
 
     private void checkForOverlap(Appointment appointment, int userId) {
         for (Appointment existingApp : appointmentRepository.findAllByUserId(userId)) {
-            if (!((appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getEndDate().isBefore(existingApp.getStartDate())) ||
-                    (appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getStartDate().isAfter(existingApp.getEndDate())))) {
-                throw new AppointmentExistsException();
+            if (appointment.getId() != existingApp.getId()) {
+                if (!((appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getEndDate().isBefore(existingApp.getStartDate())) ||
+                        (appointment.getStartDate().isAfter(LocalDateTime.now()) && appointment.getStartDate().isAfter(existingApp.getEndDate())))) {
+                    throw new AppointmentExistsException();
+                }
             }
         }
     }
@@ -99,7 +103,7 @@ public class AppointmentService {
             }
         }
         if (list.isEmpty()) {
-            throw new ActivityNotFoundException(); // not found these activities???
+            throw new ActivityNotFoundException();
         }
         app.setActivities(list);
         app.setEndDate(app.getStartDate().plusMinutes(totalMinutes));
