@@ -10,7 +10,8 @@ import com.prime.rushhour.repository.ActivityRepository;
 import com.prime.rushhour.repository.AppointmentRepository;
 import com.prime.rushhour.repository.UserRepository;
 import com.prime.rushhour.security.MyUserDetails;
-import org.modelmapper.ModelMapper;
+import org.modelmapper.*;
+import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,10 +36,10 @@ public class AppointmentService {
         if (currentUser.hasRole("ROLE_ADMIN")) {
             Page<Appointment> pagedResult = appointmentRepository.findAll(paging);
             return pagedResult.stream()
-                    .map(a->modelMapper.map(a,AppointmentResponseDTO.class))
+                    .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
                     .collect(Collectors.toList());
         } else {
-            Page<Appointment> pagedResult = appointmentRepository.findAllByUserId(currentUser.getId(),paging);
+            Page<Appointment> pagedResult = appointmentRepository.findAllByUserId(currentUser.getId(), paging);
             return pagedResult.stream()
                     .map(a -> modelMapper.map(a, AppointmentResponseDTO.class))
                     .collect(Collectors.toList());
@@ -55,7 +56,8 @@ public class AppointmentService {
     }
 
     public AppointmentResponseDTO add(AppointmentRequestDTO dto, int currentId) {
-        Appointment app = modelMapper.map(dto, Appointment.class);
+        Appointment app = mapAppointments(dto);
+        // Appointment app = modelMapper.map(dto, Appointment.class);
         Optional<User> currentUser = userRepository.findById(currentId);
         app.setUser(currentUser.get());
         Appointment appointment = calculateEndDate(app);
@@ -66,7 +68,8 @@ public class AppointmentService {
 
     public AppointmentResponseDTO updateById(AppointmentRequestDTO dto, int id, MyUserDetails currentUser) {
         Appointment oldAppointment = appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(id));
-        Appointment app = modelMapper.map(dto, Appointment.class);
+        Appointment app = mapAppointments(dto);
+        //    Appointment app = modelMapper.map(dto, Appointment.class);
         if (currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
             User user = userRepository.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new);
             app.setUser(user);
@@ -120,6 +123,39 @@ public class AppointmentService {
             throw new ForbiddenException();
         }
     }
+
+    public Appointment mapAppointments(AppointmentRequestDTO dto) {
+        Appointment app = new Appointment();
+        List<Activity> currentActivities = new ArrayList<>();
+        for (String name : dto.getActivitiesName()) {
+            Activity activity = new Activity(name);
+            currentActivities.add(activity);
+        }
+        app.setStartDate(dto.getStartDate());
+        app.setActivities(currentActivities);
+        return app;
+    }
+
+
+
+  /*  Converter<List<String>, List<Activity>> converter = new
+            Converter<List<String>, List<Activity>>() {
+                @Override
+                public List<Activity> convert(MappingContext<List<String>, List<Activity>> mappingContext) {
+                    for(String name : mappingContext.getSource()){
+                        Activity activity = new Activity(name);
+                        mappingContext.getDestination().add(activity);
+                    }
+                    return mappingContext.getDestination();
+                }
+            };
+    PropertyMap<AppointmentRequestDTO, Appointment> personMap = new PropertyMap <AppointmentRequestDTO, Appointment>() {
+        protected void configure() {
+          // using(converter)....
+        }
+    };
+
+   */
 
     @Autowired
     public void setAppointmentRepository(AppointmentRepository appointmentRepository) {

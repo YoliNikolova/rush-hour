@@ -1,11 +1,15 @@
 package com.prime.rushhour.services;
 
 import com.prime.rushhour.entities.Activity;
+import com.prime.rushhour.entities.Appointment;
 import com.prime.rushhour.exception.ActivityNotFoundException;
 import com.prime.rushhour.models.ActivityDTO;
 import com.prime.rushhour.repository.ActivityRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +21,10 @@ public class ActivityService {
     private ActivityRepository activityRepository;
     private ModelMapper modelMapper;
 
-    public List<ActivityDTO> getAll() {
-        return activityRepository.findAll().stream()
+    public List<ActivityDTO> getAll(int pageNo,int pageSize) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
+        Page<Activity> pagedResult = activityRepository.findAll(paging);
+        return pagedResult.stream()
                 .map(a -> modelMapper.map(a, ActivityDTO.class))
                 .collect(Collectors.toList());
     }

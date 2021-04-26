@@ -2,7 +2,6 @@ package com.prime.rushhour.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.prime.rushhour.entities.Activity;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +14,7 @@ public class AppointmentRequestDTO {
 
     private int userId;
 
-    private List<Activity> activities;
+    private List<String> activitiesName;
 
     public AppointmentRequestDTO() {
 
@@ -29,12 +28,12 @@ public class AppointmentRequestDTO {
         this.startDate = startDate;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
+    public List<String> getActivitiesName() {
+        return activitiesName;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setActivitiesName(List<String> activitiesName) {
+        this.activitiesName = activitiesName;
     }
 
     public int getUserId() {

@@ -21,9 +21,9 @@ public class ActivityController {
         return ResponseEntity.ok(activity);
     }
 
-    @GetMapping
-    public List<ActivityDTO> getAllActivities(){
-        return activityService.getAll();
+    @GetMapping("/{pageNo}/{pageSize}")
+    public List<ActivityDTO> getAllActivities(@PathVariable int pageNo,@PathVariable int pageSize){
+        return activityService.getAll(pageNo,pageSize);
     }
 
     @Secured("ROLE_ADMIN")

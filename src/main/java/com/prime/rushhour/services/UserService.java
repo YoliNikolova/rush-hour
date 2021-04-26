@@ -1,5 +1,6 @@
 package com.prime.rushhour.services;
 
+import com.prime.rushhour.entities.Activity;
 import com.prime.rushhour.entities.Role;
 import com.prime.rushhour.entities.User;
 import com.prime.rushhour.exception.ThisEmailAlreadyExistsException;
@@ -11,6 +12,9 @@ import com.prime.rushhour.repository.RoleRepository;
 import com.prime.rushhour.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,8 +34,10 @@ public class UserService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public List<UserResponseDTO> getAll() {
-        return userRepository.findAll().stream()
+    public List<UserResponseDTO> getAll(int pageNo,int pageSize) {
+        Pageable paging = PageRequest.of(pageNo, pageSize);
+        Page<User> pagedResult = userRepository.findAll(paging);
+        return pagedResult.stream()
                 .map(u -> modelMapper.map(u, UserResponseDTO.class))
                 .collect(Collectors.toList());
     }
