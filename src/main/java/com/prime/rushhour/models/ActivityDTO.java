@@ -1,11 +1,24 @@
 package com.prime.rushhour.models;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+
 public class ActivityDTO {
+    @NotNull
+    @Size(max = 100)
     private String name;
+
+    @NotNull
+    @Min(value = 5, message = "Minutes should not be less than 5")
     private int minutes;
+
+    @NotNull
+    @Positive
     private double price;
 
-    public ActivityDTO(){
+    public ActivityDTO() {
 
     }
 

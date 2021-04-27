@@ -11,7 +11,6 @@ import com.prime.rushhour.repository.AppointmentRepository;
 import com.prime.rushhour.repository.UserRepository;
 import com.prime.rushhour.security.MyUserDetails;
 import org.modelmapper.*;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,7 +56,6 @@ public class AppointmentService {
 
     public AppointmentResponseDTO add(AppointmentRequestDTO dto, int currentId) {
         Appointment app = mapAppointments(dto);
-        // Appointment app = modelMapper.map(dto, Appointment.class);
         Optional<User> currentUser = userRepository.findById(currentId);
         app.setUser(currentUser.get());
         Appointment appointment = calculateEndDate(app);
@@ -69,7 +67,6 @@ public class AppointmentService {
     public AppointmentResponseDTO updateById(AppointmentRequestDTO dto, int id, MyUserDetails currentUser) {
         Appointment oldAppointment = appointmentRepository.findById(id).orElseThrow(() -> new AppointmentNotFoundException(id));
         Appointment app = mapAppointments(dto);
-        //    Appointment app = modelMapper.map(dto, Appointment.class);
         if (currentUser.hasRole("ROLE_ADMIN") && dto.getUserId() != 0) {
             User user = userRepository.findById(dto.getUserId()).orElseThrow(UserNotFoundException::new);
             app.setUser(user);
@@ -135,27 +132,6 @@ public class AppointmentService {
         app.setActivities(currentActivities);
         return app;
     }
-
-
-
-  /*  Converter<List<String>, List<Activity>> converter = new
-            Converter<List<String>, List<Activity>>() {
-                @Override
-                public List<Activity> convert(MappingContext<List<String>, List<Activity>> mappingContext) {
-                    for(String name : mappingContext.getSource()){
-                        Activity activity = new Activity(name);
-                        mappingContext.getDestination().add(activity);
-                    }
-                    return mappingContext.getDestination();
-                }
-            };
-    PropertyMap<AppointmentRequestDTO, Appointment> personMap = new PropertyMap <AppointmentRequestDTO, Appointment>() {
-        protected void configure() {
-          // using(converter)....
-        }
-    };
-
-   */
 
     @Autowired
     public void setAppointmentRepository(AppointmentRepository appointmentRepository) {

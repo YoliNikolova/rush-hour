@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,9 +19,9 @@ public class AppointmentController {
 
     private AppointmentService appointmentService;
 
-    @GetMapping("/{pageNo}/{pageSize}")
-    public List<AppointmentResponseDTO> getAllAppointments(@PathVariable int pageNo,@PathVariable int pageSize,@AuthenticationPrincipal MyUserDetails currentUser) {
-        return appointmentService.getAll(pageNo,pageSize,currentUser);
+    @GetMapping()
+    public List<AppointmentResponseDTO> getAllAppointments(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "5") int pageSize, @AuthenticationPrincipal MyUserDetails currentUser) {
+        return appointmentService.getAll(pageNo, pageSize, currentUser);
     }
 
     @GetMapping("/{id}")
@@ -31,12 +32,12 @@ public class AppointmentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AppointmentResponseDTO addNewAppointment(@RequestBody AppointmentRequestDTO app, @AuthenticationPrincipal MyUserDetails currentUser) {
+    public AppointmentResponseDTO addNewAppointment(@RequestBody @Valid AppointmentRequestDTO app, @AuthenticationPrincipal MyUserDetails currentUser) {
         return appointmentService.add(app, currentUser.getId());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AppointmentResponseDTO> updateAppointment(@RequestBody AppointmentRequestDTO app, @PathVariable int id, @AuthenticationPrincipal MyUserDetails currentUser) {
+    public ResponseEntity<AppointmentResponseDTO> updateAppointment(@RequestBody @Valid AppointmentRequestDTO app, @PathVariable int id, @AuthenticationPrincipal MyUserDetails currentUser) {
         AppointmentResponseDTO updateApp = appointmentService.updateById(app, id, currentUser);
         return ResponseEntity.ok(updateApp);
     }

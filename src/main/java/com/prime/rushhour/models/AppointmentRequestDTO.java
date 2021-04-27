@@ -3,6 +3,9 @@ package com.prime.rushhour.models;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,8 +15,10 @@ public class AppointmentRequestDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startDate;
 
+    @Positive
     private int userId;
 
+    @NotEmpty(message = "No activity names")
     private List<String> activitiesName;
 
     public AppointmentRequestDTO() {
