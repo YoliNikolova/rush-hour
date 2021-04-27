@@ -21,8 +21,7 @@ public class ActivityService {
     private ActivityRepository activityRepository;
     private ModelMapper modelMapper;
 
-    public List<ActivityDTO> getAll(int pageNo,int pageSize) {
-        Pageable paging = PageRequest.of(pageNo, pageSize);
+    public List<ActivityDTO> getAll(Pageable paging) {
         Page<Activity> pagedResult = activityRepository.findAll(paging);
         return pagedResult.stream()
                 .map(a -> modelMapper.map(a, ActivityDTO.class))

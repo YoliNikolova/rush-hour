@@ -30,8 +30,7 @@ public class AppointmentService {
     private ActivityRepository activityRepository;
     private ModelMapper modelMapper;
 
-    public List<AppointmentResponseDTO> getAll(int pageNo, int pageSize, MyUserDetails currentUser) {
-        Pageable paging = PageRequest.of(pageNo, pageSize);
+    public List<AppointmentResponseDTO> getAll(Pageable paging, MyUserDetails currentUser) {
         if (currentUser.hasRole("ROLE_ADMIN")) {
             Page<Appointment> pagedResult = appointmentRepository.findAll(paging);
             return pagedResult.stream()

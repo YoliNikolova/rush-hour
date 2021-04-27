@@ -3,6 +3,7 @@ package com.prime.rushhour.controllers;
 import com.prime.rushhour.models.ActivityDTO;
 import com.prime.rushhour.services.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -23,8 +24,8 @@ public class ActivityController {
     }
 
     @GetMapping()
-    public List<ActivityDTO> getAllActivities(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "5") int pageSize) {
-        return activityService.getAll(pageNo, pageSize);
+    public List<ActivityDTO> getAllActivities(Pageable paging) {
+        return activityService.getAll(paging);
     }
 
     @Secured("ROLE_ADMIN")

@@ -5,6 +5,7 @@ import com.prime.rushhour.models.AppointmentResponseDTO;
 import com.prime.rushhour.security.MyUserDetails;
 import com.prime.rushhour.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,8 +21,8 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @GetMapping()
-    public List<AppointmentResponseDTO> getAllAppointments(@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "5") int pageSize, @AuthenticationPrincipal MyUserDetails currentUser) {
-        return appointmentService.getAll(pageNo, pageSize, currentUser);
+    public List<AppointmentResponseDTO> getAllAppointments(Pageable paging, @AuthenticationPrincipal MyUserDetails currentUser) {
+        return appointmentService.getAll(paging, currentUser);
     }
 
     @GetMapping("/{id}")

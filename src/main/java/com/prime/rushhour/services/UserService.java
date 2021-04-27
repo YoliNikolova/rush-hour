@@ -34,8 +34,7 @@ public class UserService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public List<UserResponseDTO> getAll(int pageNo,int pageSize) {
-        Pageable paging = PageRequest.of(pageNo, pageSize);
+    public List<UserResponseDTO> getAll(Pageable paging) {
         Page<User> pagedResult = userRepository.findAll(paging);
         return pagedResult.stream()
                 .map(u -> modelMapper.map(u, UserResponseDTO.class))
