@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 public class AuthenticationController {
 
@@ -32,7 +34,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value="/register",method = RequestMethod.POST)
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody RegisterRequest request){
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody @Valid RegisterRequest request){
         UserResponseDTO user = userService.registerUser(request);
         return ResponseEntity.ok(user);
     }

@@ -4,6 +4,7 @@ import com.prime.rushhour.models.UserRequestDTO;
 import com.prime.rushhour.models.UserResponseDTO;
 import com.prime.rushhour.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +29,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping()
-    public List<UserResponseDTO> getAllUsers() {
-        List<UserResponseDTO> allUsers = userService.getAll();
+    @GetMapping
+    public List<UserResponseDTO> getAllUsers(Pageable paging) {
+        List<UserResponseDTO> allUsers = userService.getAll(paging);
         return allUsers;
     }
 
