@@ -3,6 +3,8 @@ package com.prime.rushhour;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prime.rushhour.controllers.UserController;
 import com.prime.rushhour.models.UserResponseDTO;
+import com.prime.rushhour.security.JwtUtil;
+import com.prime.rushhour.security.MyUserDetailsService;
 import com.prime.rushhour.services.UserService;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -25,15 +27,21 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(UserController.class)
-@WithMockUser()
+@WithMockUser(authorities = "ROLE_ADMIN")
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private JwtUtil jwtUtil;
+
+    @MockBean
+    private MyUserDetailsService myUserDetailsService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -42,14 +50,12 @@ public class UserControllerTest {
     private UserService userService;
 
     @Test
-    public void getAllUsers() throws Exception {
-       // Pageable page = PageRequest.of(0,2);
+    public void getAllShouldReturnAllUsers() throws Exception {
         List<UserResponseDTO> listUsers = new ArrayList<>();
         listUsers.add(new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg"));
         listUsers.add(new UserResponseDTO("Vanesa","Angelova","nesi@abv.bg"));
 
-        Pageable pageable = Mockito.mock(Pageable.class);
-        Mockito.when(userService.getAll(pageable)).thenReturn(listUsers);
+        Mockito.when(userService.getAll(any(Pageable.class))).thenReturn(listUsers);
 
         String url = "/users";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
@@ -60,6 +66,25 @@ public class UserControllerTest {
         System.out.println(actualResponse);
 
         String expectedResponse = objectMapper.writeValueAsString(listUsers);
+
+        assertThat(actualResponse,equalToIgnoringWhiteSpace(expectedResponse));
+    }
+
+    @Test
+    public void getUserByIdShouldReturnUser() throws Exception {
+        UserResponseDTO user = new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg");
+
+        Mockito.when(userService.getById(Mockito.anyInt())).thenReturn(user);
+
+        String url = "/users/1";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
+
+        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
+
+        String actualResponse = mvcResult.getResponse().getContentAsString();
+        System.out.println(actualResponse);
+
+        String expectedResponse = objectMapper.writeValueAsString(user);
 
         assertThat(actualResponse,equalToIgnoringWhiteSpace(expectedResponse));
     }
