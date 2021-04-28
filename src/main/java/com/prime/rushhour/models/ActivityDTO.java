@@ -22,6 +22,12 @@ public class ActivityDTO {
 
     }
 
+    public ActivityDTO(String name,int minutes,double price){
+        this.name=name;
+        this.minutes=minutes;
+        this.price=price;
+    }
+
     public String getName() {
         return name;
     }
