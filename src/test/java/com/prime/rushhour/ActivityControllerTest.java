@@ -99,7 +99,7 @@ public class ActivityControllerTest {
         Mockito.when(activityService.getById(anyInt())).thenThrow(ActivityNotFoundException.class);
         String url = "/activities/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
-        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().is4xxClientError()).andReturn();
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
         assertTrue(result.getResolvedException() instanceof ActivityNotFoundException);
     }
@@ -283,9 +283,8 @@ public class ActivityControllerTest {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
-        int status = result.getResponse().getStatus();
-        
+
         Mockito.verify(activityService,Mockito.times(1)).delete(1);
-        assertEquals(status,HttpStatus.NOT_FOUND.value());
+        assertTrue(result.getResolvedException() instanceof ActivityNotFoundException);
     }
 }
