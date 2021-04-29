@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
@@ -123,7 +124,7 @@ public class ActivityControllerTest {
 
     @Test
     @WithMockUser(authorities = "ROLE_ADMIN")
-    public void nameForActivityMustNotBeEmpty() throws Exception {
+    public void nameForActivityMustNotBeEmptyWhenCreating() throws Exception {
         ActivityDTO activity = new ActivityDTO("",60,5.00);
 
         String url = "/activities";
@@ -140,7 +141,7 @@ public class ActivityControllerTest {
 
     @Test
     @WithMockUser(authorities = "ROLE_ADMIN")
-    public void minutesForActivityMustGreaterThan5() throws Exception {
+    public void minutesForActivityMustGreaterThan5WhenCreating() throws Exception {
         ActivityDTO activity = new ActivityDTO("Fitness",1,5.00);
 
         String url = "/activities";
@@ -157,7 +158,7 @@ public class ActivityControllerTest {
 
     @Test
     @WithMockUser(authorities = "ROLE_ADMIN")
-    public void priceForActivityMustBePositive() throws Exception {
+    public void priceForActivityMustBePositiveWhenCreating() throws Exception {
         ActivityDTO activity = new ActivityDTO("Fitness",10,0);
 
         String url = "/activities";
@@ -208,4 +209,83 @@ public class ActivityControllerTest {
         assertTrue(result.getResolvedException() instanceof ActivityNotFoundException);
     }
 
+    @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    public void nameForActivityMustNotBeEmptyWhenUpdating() throws Exception {
+        ActivityDTO activity = new ActivityDTO("",60,5.00);
+
+        String url = "/activities/1";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put(url)
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(activity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        Mockito.verify(activityService,Mockito.times(0)).updateById(activity,1);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    public void minutesForActivityMustGreaterThan5WhenUpdating() throws Exception {
+        ActivityDTO activity = new ActivityDTO("Fitness",1,5.00);
+
+        String url = "/activities/1";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put(url)
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(activity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        Mockito.verify(activityService,Mockito.times(0)).updateById(activity,1);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    public void priceForActivityMustBePositiveWhenUpdating() throws Exception {
+        ActivityDTO activity = new ActivityDTO("Fitness",10,0);
+
+        String url = "/activities/1";
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .put(url)
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(activity))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        Mockito.verify(activityService,Mockito.times(0)).updateById(activity,1);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    public void deleteByIdSuccess() throws Exception {
+
+        Mockito.doNothing().when(activityService).delete(anyInt());
+
+        String url = "/activities/1";
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
+        int status = result.getResponse().getStatus();
+        Mockito.verify(activityService,Mockito.times(1)).delete(1);
+        assertEquals(status,HttpStatus.OK.value());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    public void deleteByIdThrowException() throws Exception {
+        Mockito.doThrow(ActivityNotFoundException.class).when(activityService).delete(anyInt());
+        String url = "/activities/1";
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
+        MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
+        int status = result.getResponse().getStatus();
+        
+        Mockito.verify(activityService,Mockito.times(1)).delete(1);
+        assertEquals(status,HttpStatus.NOT_FOUND.value());
+    }
 }
