@@ -41,10 +41,12 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void add(UserRequestDTO newUser) {
+    public UserResponseDTO add(UserRequestDTO newUser) {
         User user = modelMapper.map(newUser, User.class);
         List<Role> list = new ArrayList<>();
-        userRepository.save(setRolesForUser(user, list));
+        User userSaved = setRolesForUser(user, list);
+        userRepository.save(userSaved);
+        return modelMapper.map(userSaved,UserResponseDTO.class);
     }
 
     public UserResponseDTO updateById(UserRequestDTO newUser, int id) {
