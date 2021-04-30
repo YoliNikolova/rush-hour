@@ -1,28 +1,34 @@
 package com.prime.rushhour.models;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 public class RegisterRequest {
-    @NotNull
+    @NotEmpty
     @Size(max = 100)
     private String firstName;
 
-    @NotNull
+    @NotEmpty
     @Size(max = 100)
     private String lastName;
 
-    @NotNull
+    @NotEmpty
     @Email
     private String email;
 
-    @NotNull
+    @NotEmpty
     @Size(min = 8, max = 20)
     private String password;
 
     public RegisterRequest(){
     }
 
+    public RegisterRequest(String firstName,String lastName,String email,String password){
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email=email;
+        this.password=password;
+    }
     public String getEmail() {
         return email;
     }
