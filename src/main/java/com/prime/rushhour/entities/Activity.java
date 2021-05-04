@@ -24,6 +24,12 @@ public class Activity {
         this.name=name;
     }
 
+    public Activity(String name,int minutes,double price){
+        this.name=name;
+        this.minutes=minutes;
+        this.price=price;
+    }
+
     public String getName() {
         return name;
     }
