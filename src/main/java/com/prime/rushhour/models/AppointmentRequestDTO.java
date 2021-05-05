@@ -25,6 +25,11 @@ public class AppointmentRequestDTO {
 
     }
 
+    public AppointmentRequestDTO(LocalDateTime startDate,List<String> activitiesName){
+        this.startDate=startDate;
+        this.activitiesName=activitiesName;
+    }
+
     public LocalDateTime getStartDate() {
         return startDate;
     }

@@ -27,6 +27,16 @@ public class Appointment {
             inverseJoinColumns = {@JoinColumn()})
     private List<Activity> activities = new ArrayList<>();
 
+    public Appointment(){
+
+    }
+
+    public Appointment(LocalDateTime startDate,LocalDateTime endDate,List<Activity> activities){
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.activities=activities;
+    }
+
     public LocalDateTime getStartDate() {
         return startDate;
     }
