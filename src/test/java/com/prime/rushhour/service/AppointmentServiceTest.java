@@ -12,6 +12,7 @@ import com.prime.rushhour.repository.AppointmentRepository;
 import com.prime.rushhour.repository.UserRepository;
 import com.prime.rushhour.security.MyUserDetails;
 import com.prime.rushhour.services.AppointmentService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -48,9 +49,17 @@ public class AppointmentServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
+    private User user;
+    private MyUserDetails myUserDetails;
+
+    @Before()
+    public void setUp() {
+        user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("ROLE_USER")));
+        myUserDetails = Mockito.mock(MyUserDetails.class);
+    }
+
     @Test
     public void getAllAppointmentsByADMIN() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
         Pageable pageable = Mockito.mock(Pageable.class);
         Page<Appointment> appointments = Mockito.mock(Page.class);
         when(appointmentRepository.findAll(any(Pageable.class))).thenReturn(appointments);
@@ -62,8 +71,6 @@ public class AppointmentServiceTest {
 
     @Test
     public void getAllAppointmentsByUSER() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-
         Pageable pageable = Mockito.mock(Pageable.class);
         Page<Appointment> appointments = Mockito.mock(Page.class);
         when(appointmentRepository.findAllByUserId(anyInt(), any(Pageable.class))).thenReturn(appointments);
@@ -75,8 +82,6 @@ public class AppointmentServiceTest {
 
     @Test
     public void getAppointmentByIdSuccess() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         Appointment app = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga")));
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga")));
 
@@ -91,18 +96,13 @@ public class AppointmentServiceTest {
 
     @Test(expected = AppointmentNotFoundException.class)
     public void getAppointmentByIdThrowExceptionNotFound() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-
         when(appointmentRepository.findById(anyInt())).thenThrow(AppointmentNotFoundException.class);
         appointmentService.getById(1, myUserDetails);
     }
 
     @Test(expected = ForbiddenException.class)
     public void getAppointmentByIdThrowExceptionForbidden() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         Appointment app = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga")));
-        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga")));
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(app));
         when(myUserDetails.hasRole("ROLE_ADMIN")).thenReturn(false);
@@ -113,10 +113,9 @@ public class AppointmentServiceTest {
 
     @Test
     public void addAppointmentSuccess() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
-        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
-        Appointment app = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
+        Appointment app = new Appointment(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
         Activity activity = new Activity("Fitness", 60, 5.00);
 
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
@@ -131,7 +130,6 @@ public class AppointmentServiceTest {
 
     @Test(expected = ActivityNotFoundException.class)
     public void addAppointmentThrowActivityNotFound() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
         Appointment app = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
 
@@ -144,7 +142,6 @@ public class AppointmentServiceTest {
 
     @Test(expected = AppointmentExistsException.class)
     public void addAppointmentThrowExistingAppointment() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 4, 3, 14, 15), Arrays.asList("Fitness"));
         Appointment app = new Appointment(LocalDateTime.of(2021, 4, 3, 14, 15), LocalDateTime.of(2021, 4, 3, 16, 45), Arrays.asList(new Activity("Fitness")));
         Activity activity = new Activity("Fitness", 60, 5.00);
@@ -161,12 +158,10 @@ public class AppointmentServiceTest {
 
     @Test
     public void updateAppointmentByIdByADMIN() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
-        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
-        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
-        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
+        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
+        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
         Activity activity = new Activity("Fitness", 60, 5.00);
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(oldAppointment));
@@ -180,18 +175,13 @@ public class AppointmentServiceTest {
 
         AppointmentResponseDTO response = appointmentService.updateById(appRequest, 2, myUserDetails);
         assertEquals(response.getId(), oldAppointment.getId());
-        assertNotSame(oldAppointment.getActivities().get(0),response.getActivities().get(0));
+        assertNotSame(oldAppointment.getActivities().get(0), response.getActivities().get(0));
     }
 
     @Test(expected = UserNotFoundException.class)
     public void updateAppointmentByIdByADMINThrowUserNotFound() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
         Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
-        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
-        Activity activity = new Activity("Fitness", 60, 5.00);
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(oldAppointment));
         appRequest.setUserId(2);
@@ -203,7 +193,6 @@ public class AppointmentServiceTest {
 
     @Test(expected = AppointmentNotFoundException.class)
     public void updateAppointmentByIdThrowAppNotFound() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
 
         when(appointmentRepository.findById(anyInt())).thenThrow(AppointmentNotFoundException.class);
@@ -213,7 +202,6 @@ public class AppointmentServiceTest {
 
     @Test(expected = ForbiddenException.class)
     public void updateAppointmentByIdThrowForbiddenForUpdate() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
         Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
 
@@ -226,12 +214,10 @@ public class AppointmentServiceTest {
 
     @Test
     public void updateAppointmentByIdByUSER() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
-        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
-        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
-        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
+        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
+        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
+        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
         Activity activity = new Activity("Fitness", 60, 5.00);
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(oldAppointment));
@@ -244,13 +230,11 @@ public class AppointmentServiceTest {
 
         AppointmentResponseDTO response = appointmentService.updateById(appRequest, 2, myUserDetails);
         assertEquals(response.getId(), oldAppointment.getId());
-        assertNotSame(response.getActivities().get(0),oldAppointment.getActivities().get(0));
+        assertNotSame(response.getActivities().get(0), oldAppointment.getActivities().get(0));
     }
 
     @Test(expected = ForbiddenException.class)
     public void updateAppointmentByIdByUSERThrowForbidden() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
         Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
 
@@ -264,8 +248,6 @@ public class AppointmentServiceTest {
 
     @Test(expected = ActivityNotFoundException.class)
     public void updateAppointmentByIdThrowActivityNotFound() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 5, 14, 15), Arrays.asList("Fitness"));
         Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
 
@@ -281,11 +263,9 @@ public class AppointmentServiceTest {
 
     @Test(expected = AppointmentExistsException.class)
     public void updateAppointmentByIdThrowExistingApp() {
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 4, 3, 14, 15), Arrays.asList("Yoga"));
-        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 4, 3, 14, 15), LocalDateTime.of(2021, 4, 3, 16, 45), Arrays.asList(new Activity("Fitness")));
-        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 4, 3, 14, 15), LocalDateTime.of(2021, 4, 3, 16, 45), Arrays.asList(new Activity("Yoga")));
+        AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 5, 3, 14, 15), Arrays.asList("Yoga"));
+        Appointment oldAppointment = new Appointment(LocalDateTime.of(2021, 5, 3, 14, 15), LocalDateTime.of(2021, 5, 3, 16, 45), Arrays.asList(new Activity("Fitness")));
+        Appointment newAppointment = new Appointment(LocalDateTime.of(2021, 5, 3, 14, 15), LocalDateTime.of(2021, 5, 3, 16, 45), Arrays.asList(new Activity("Yoga")));
         Activity activity = new Activity("Fitness", 60, 5.00);
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(oldAppointment));
@@ -301,32 +281,28 @@ public class AppointmentServiceTest {
     }
 
     @Test
-    public void deleteAppointmentByIdSuccess(){
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
+    public void deleteAppointmentByIdSuccess() {
         Appointment app = new Appointment(LocalDateTime.of(2021, 4, 3, 14, 15), LocalDateTime.of(2021, 4, 3, 16, 45), Arrays.asList(new Activity("Fitness")));
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(app));
         user.setId(myUserDetails.getId());
         app.setUser(user);
         doNothing().when(appointmentRepository).deleteById(anyInt());
 
-        appointmentService.delete(1,myUserDetails);
-        verify(appointmentRepository,times(1)).deleteById(1);
+        appointmentService.delete(1, myUserDetails);
+        verify(appointmentRepository, times(1)).deleteById(1);
     }
 
     @Test(expected = ForbiddenException.class)
-    public void deleteAppointmentByIdThrowForbiddenException(){
-        MyUserDetails myUserDetails = Mockito.mock(MyUserDetails.class);
+    public void deleteAppointmentByIdThrowForbiddenException() {
         Appointment app = new Appointment(LocalDateTime.of(2021, 4, 3, 14, 15), LocalDateTime.of(2021, 4, 3, 16, 45), Arrays.asList(new Activity("Fitness")));
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(app));
-        user.setId(myUserDetails.getId()+1);
+        user.setId(myUserDetails.getId() + 1);
         when(myUserDetails.hasRole("ROLE_ADMIN")).thenReturn(false);
         app.setUser(user);
 
-        appointmentService.delete(1,myUserDetails);
-        verify(appointmentRepository,times(0)).deleteById(1);
+        appointmentService.delete(1, myUserDetails);
+        verify(appointmentRepository, times(0)).deleteById(1);
     }
 }

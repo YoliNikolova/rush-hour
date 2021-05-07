@@ -10,6 +10,7 @@ import com.prime.rushhour.models.UserResponseDTO;
 import com.prime.rushhour.repository.RoleRepository;
 import com.prime.rushhour.repository.UserRepository;
 import com.prime.rushhour.services.UserService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,10 +41,15 @@ public class UserServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
+    private User user;
+
+    @Before
+    public void setUp() {
+        user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("ROLE_USER")));
+    }
 
     @Test
     public void getUserByIdSuccess() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
 
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
@@ -62,7 +68,6 @@ public class UserServiceTest {
 
     @Test
     public void getAllUsersSuccess() {
-        UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         Pageable pageable = Mockito.mock(Pageable.class);
         Page<User> users = Mockito.mock(Page.class);
         when(userRepository.findAll(any(Pageable.class))).thenReturn(users);
@@ -72,7 +77,6 @@ public class UserServiceTest {
 
     @Test
     public void addNewUserSuccessWithExistingRoles() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
@@ -87,7 +91,6 @@ public class UserServiceTest {
 
     @Test
     public void addNewUserSuccessWithNotExistingRoles() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
@@ -101,8 +104,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUserWithExistingRoles(){
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
+    public void updateUserWithExistingRoles() {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
@@ -114,12 +116,11 @@ public class UserServiceTest {
         Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.updateById(requestUser, 1);
 
-        assertSame(response.getEmail(),requestUser.getEmail());
+        assertSame(response.getEmail(), requestUser.getEmail());
     }
 
     @Test
-    public void updateUserWithNotExistingRoles(){
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
+    public void updateUserWithNotExistingRoles() {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
@@ -131,26 +132,23 @@ public class UserServiceTest {
         Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.updateById(requestUser, 1);
 
-        assertSame(response.getEmail(),requestUser.getEmail());
+        assertSame(response.getEmail(), requestUser.getEmail());
     }
 
     @Test(expected = UserNotFoundException.class)
-    public void updateUserThrowException(){
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
+    public void updateUserThrowException() {
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
         Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
-      //  when(userRepository.existsById(1)).thenReturn(false);
         userService.updateById(requestUser, 1);
 
-        verify(userRepository,times(0)).save(user);
+        verify(userRepository, times(0)).save(user);
     }
 
     @Test
     public void registerUserWithExistingRoles() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
-        RegisterRequest request = new RegisterRequest("Yoli","Nikolova","yoli@abv.bg","yoli9898");
+        RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
         Role role = new Role("ROLE_USER");
 
         Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
@@ -161,14 +159,13 @@ public class UserServiceTest {
         Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.registerUser(request);
 
-        assertSame(response.getEmail(),request.getEmail());
+        assertSame(response.getEmail(), request.getEmail());
     }
 
     @Test
     public void registerUserWithNotExistingRoles() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
-        RegisterRequest request = new RegisterRequest("Yoli","Nikolova","yoli@abv.bg","yoli9898");
+        RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
 
         Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
@@ -178,19 +175,18 @@ public class UserServiceTest {
         Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.registerUser(request);
 
-        assertSame(response.getEmail(),request.getEmail());
+        assertSame(response.getEmail(), request.getEmail());
     }
 
     @Test(expected = ThisEmailAlreadyExistsException.class)
     public void registerUserThrowException() {
-        User user = new User("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        RegisterRequest request = new RegisterRequest("Yoli","Nikolova","yoli@abv.bg","yoli9898");
+        RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
 
         Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         userService.registerUser(request);
 
-        verify(userRepository,times(0)).save(user);
+        verify(userRepository, times(0)).save(user);
     }
 
     @Test

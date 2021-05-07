@@ -60,8 +60,8 @@ public class UserControllerTest {
     @Test
     public void getAllShouldReturnAllUsers() throws Exception {
         List<UserResponseDTO> listUsers = new ArrayList<>();
-        listUsers.add(new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg"));
-        listUsers.add(new UserResponseDTO("Vanesa","Angelova","nesi@abv.bg"));
+        listUsers.add(new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg"));
+        listUsers.add(new UserResponseDTO("Vanesa", "Angelova", "nesi@abv.bg"));
 
         Mockito.when(userService.getAll(any(Pageable.class))).thenReturn(listUsers);
 
@@ -75,12 +75,12 @@ public class UserControllerTest {
 
         String expectedResponse = objectMapper.writeValueAsString(listUsers);
 
-        assertThat(actualResponse,equalToIgnoringWhiteSpace(expectedResponse));
+        assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
     }
 
     @Test
     public void getUserByIdShouldReturnUser() throws Exception {
-        UserResponseDTO user = new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg");
+        UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
 
         Mockito.when(userService.getById(Mockito.anyInt())).thenReturn(user);
 
@@ -94,7 +94,7 @@ public class UserControllerTest {
 
         String expectedResponse = objectMapper.writeValueAsString(user);
 
-        assertThat(actualResponse,equalToIgnoringWhiteSpace(expectedResponse));
+        assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
     }
 
     @Test
@@ -109,8 +109,8 @@ public class UserControllerTest {
 
     @Test
     public void createNewUserSuccess() throws Exception {
-        UserResponseDTO user = new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg");
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli","Nikolova","yoli@abv.bg","yoli9818", Arrays.asList(new Role("User")));
+        UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
         Mockito.when(userService.add(any(UserRequestDTO.class))).thenReturn(user);
 
         String url = "/users";
@@ -122,15 +122,15 @@ public class UserControllerTest {
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
-        assertThat(response.getContentAsString(),equalToIgnoringWhiteSpace(objectMapper.writeValueAsString(user)));
+        assertThat(response.getContentAsString(), equalToIgnoringWhiteSpace(objectMapper.writeValueAsString(user)));
     }
 
     @Test
     public void updateUserSuccess() throws Exception {
-        UserResponseDTO user = new UserResponseDTO("Yoli","Nikolova","yoli@abv.bg");
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli","Nikolova","yoli@abv.bg","yoli9818", Arrays.asList(new Role("User")));
+        UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(userService.updateById(any(UserRequestDTO.class),anyInt())).thenReturn(user);
+        Mockito.when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenReturn(user);
 
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -140,14 +140,14 @@ public class UserControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        assertThat(response.getContentAsString(),equalToIgnoringWhiteSpace(objectMapper.writeValueAsString(user)));
+        assertThat(response.getContentAsString(), equalToIgnoringWhiteSpace(objectMapper.writeValueAsString(user)));
     }
 
     @Test
     public void updateUserShouldThrowException() throws Exception {
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli","Nikolova","yoli@abv.bg","yoli9818", Arrays.asList(new Role("User")));
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(userService.updateById(any(UserRequestDTO.class),anyInt())).thenThrow(UserNotFoundException.class);
+        Mockito.when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenThrow(UserNotFoundException.class);
 
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -162,7 +162,6 @@ public class UserControllerTest {
 
     @Test
     public void deleteByIdSuccess() throws Exception {
-
         Mockito.doNothing().when(userService).delete(anyInt());
 
         String url = "/users/1";
@@ -170,8 +169,8 @@ public class UserControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         int status = result.getResponse().getStatus();
-        Mockito.verify(userService,Mockito.times(1)).delete(1);
-        assertEquals(status,HttpStatus.OK.value());
+        Mockito.verify(userService, Mockito.times(1)).delete(1);
+        assertEquals(status, HttpStatus.OK.value());
     }
 
     @Test
@@ -182,7 +181,7 @@ public class UserControllerTest {
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
-        Mockito.verify(userService,Mockito.times(1)).delete(1);
+        Mockito.verify(userService, Mockito.times(1)).delete(1);
         assertTrue(result.getResolvedException() instanceof UserNotFoundException);
     }
 }

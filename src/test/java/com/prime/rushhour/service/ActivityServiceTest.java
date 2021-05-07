@@ -5,6 +5,7 @@ import com.prime.rushhour.exception.ActivityNotFoundException;
 import com.prime.rushhour.models.ActivityDTO;
 import com.prime.rushhour.repository.ActivityRepository;
 import com.prime.rushhour.services.ActivityService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,11 +33,17 @@ public class ActivityServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
+    private Activity activity;
+    private ActivityDTO activityDTO;
+
+    @Before
+    public void setUp() {
+        activity = new Activity("Fitness", 60, 5.00);
+        activityDTO = new ActivityDTO("Fitness", 60, 5.00);
+    }
+
     @Test
     public void addNewActivitySuccess() {
-        Activity activity = new Activity("Fitness", 60, 5.00);
-        ActivityDTO activityDTO = new ActivityDTO("Fitness", 60, 5.00);
-
         when(activityRepository.save(any(Activity.class))).thenReturn(activity);
         Mockito.when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
         Mockito.when(modelMapper.map(activity, ActivityDTO.class)).thenReturn(activityDTO);
@@ -47,9 +54,6 @@ public class ActivityServiceTest {
 
     @Test
     public void getActivityByIdSuccess() {
-        Activity activity = new Activity("Fitness", 60, 5.00);
-        ActivityDTO activityDTO = new ActivityDTO("Fitness", 60, 5.00);
-
         when(activityRepository.findById(anyInt())).thenReturn(Optional.of(activity));
         Mockito.when(modelMapper.map(any(), any())).thenReturn(activityDTO);
         ActivityDTO activityById = activityService.getById(anyInt());
@@ -74,9 +78,6 @@ public class ActivityServiceTest {
 
     @Test
     public void updateActivityByIdSuccess() {
-        Activity activity = new Activity("Fitness", 60, 5.00);
-        ActivityDTO activityDTO = new ActivityDTO("Fitness", 60, 5.00);
-
         Mockito.when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
         activity.setId(1);
         when(activityRepository.save(any(Activity.class))).thenReturn(activity);
@@ -90,9 +91,6 @@ public class ActivityServiceTest {
 
     @Test(expected = ActivityNotFoundException.class)
     public void updateActivityByIdThrowException() {
-        Activity activity = new Activity("Fitness", 60, 5.00);
-        ActivityDTO activityDTO = new ActivityDTO("Fitness", 60, 5.00);
-
         Mockito.when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
         activity.setId(1);
         when(activityRepository.existsById(1)).thenReturn(false);

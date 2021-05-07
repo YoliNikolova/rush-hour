@@ -51,13 +51,13 @@ public class RoleControllerTest {
 
     @Test
     public void getAllRoles() throws Exception {
-        List<Role> list = Arrays.asList(new Role("ROLE_ADMIN"),new Role("ROLE_USER"));
+        List<Role> list = Arrays.asList(new Role("ROLE_ADMIN"), new Role("ROLE_USER"));
 
         Mockito.when(roleService.getAll()).thenReturn(list);
         String url = "/roles";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
 
-        List<String> namesRole = Arrays.asList("ROLE_ADMIN","ROLE_USER");
+        List<String> namesRole = Arrays.asList("ROLE_ADMIN", "ROLE_USER");
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
 
@@ -65,7 +65,7 @@ public class RoleControllerTest {
         System.out.println(actualResponse);
         String expectedResponse = objectMapper.writeValueAsString(namesRole);
 
-        assertThat(actualResponse,equalToIgnoringWhiteSpace(expectedResponse));
+        assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
     }
 
     @Test

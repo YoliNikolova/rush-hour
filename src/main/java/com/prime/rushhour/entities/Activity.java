@@ -13,7 +13,7 @@ public class Activity {
     private int minutes;
     private double price;
 
-    @ManyToMany(mappedBy = "activities")
+    @ManyToMany(mappedBy = "activities",cascade = CascadeType.ALL)
     private List<Appointment> appointments=new ArrayList<>();
 
     public Activity(){

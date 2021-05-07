@@ -151,7 +151,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -166,7 +166,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -181,7 +181,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -196,7 +196,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -211,7 +211,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -227,7 +227,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -242,7 +242,7 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService,Mockito.times(0)).registerUser(reg);
+        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 }
