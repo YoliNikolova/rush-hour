@@ -20,10 +20,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private MyUserDetailsService myUserDetailService;
 
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     @Override
@@ -60,6 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .headers().cacheControl();
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Autowired
+    public void setJwtRequestFilter(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
+    @Autowired
+    public void setMyUserDetailService(MyUserDetailsService myUserDetailService) {
+        this.myUserDetailService = myUserDetailService;
     }
 }
 

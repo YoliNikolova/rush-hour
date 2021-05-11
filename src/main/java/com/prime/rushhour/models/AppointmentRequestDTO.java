@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +14,6 @@ public class AppointmentRequestDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startDate;
 
-    @Positive
     private int userId;
 
     @NotEmpty(message = "No activity names")
@@ -23,6 +21,17 @@ public class AppointmentRequestDTO {
 
     public AppointmentRequestDTO() {
 
+    }
+
+    public AppointmentRequestDTO(LocalDateTime startDate,List<String> activitiesName){
+        this.startDate=startDate;
+        this.activitiesName=activitiesName;
+    }
+
+    public AppointmentRequestDTO(LocalDateTime startDate,int userId,List<String> activitiesName){
+        this.userId=userId;
+        this.startDate=startDate;
+        this.activitiesName=activitiesName;
     }
 
     public LocalDateTime getStartDate() {

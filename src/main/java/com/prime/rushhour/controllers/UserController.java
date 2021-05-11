@@ -37,8 +37,8 @@ public class UserController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void addNewUser(@RequestBody UserRequestDTO newUser) {
-        userService.add(newUser);
+    public UserResponseDTO addNewUser(@RequestBody UserRequestDTO newUser) {
+        return userService.add(newUser);
     }
 
     @PutMapping("/{id}")

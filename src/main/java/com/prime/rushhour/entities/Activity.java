@@ -13,7 +13,7 @@ public class Activity {
     private int minutes;
     private double price;
 
-    @ManyToMany(mappedBy = "activities")
+    @ManyToMany(mappedBy = "activities",cascade = CascadeType.ALL)
     private List<Appointment> appointments=new ArrayList<>();
 
     public Activity(){
@@ -22,6 +22,12 @@ public class Activity {
 
     public Activity(String name){
         this.name=name;
+    }
+
+    public Activity(String name,int minutes,double price){
+        this.name=name;
+        this.minutes=minutes;
+        this.price=price;
     }
 
     public String getName() {

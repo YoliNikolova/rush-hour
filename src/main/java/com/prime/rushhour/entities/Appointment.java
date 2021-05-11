@@ -17,7 +17,7 @@ public class Appointment {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm", iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn()
     private User user;
 
@@ -26,6 +26,16 @@ public class Appointment {
             joinColumns = {@JoinColumn()},
             inverseJoinColumns = {@JoinColumn()})
     private List<Activity> activities = new ArrayList<>();
+
+    public Appointment(){
+
+    }
+
+    public Appointment(LocalDateTime startDate,LocalDateTime endDate,List<Activity> activities){
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.activities=activities;
+    }
 
     public LocalDateTime getStartDate() {
         return startDate;

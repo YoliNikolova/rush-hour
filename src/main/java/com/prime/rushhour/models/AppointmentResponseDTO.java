@@ -24,6 +24,12 @@ public class AppointmentResponseDTO {
 
     }
 
+    public AppointmentResponseDTO(LocalDateTime startDate,LocalDateTime endDate,List<Activity> activities){
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.activities=activities;
+    }
+
     public LocalDateTime getStartDate() {
         return startDate;
     }

@@ -21,10 +21,9 @@ import java.io.IOException;
 @Component
 @PropertySource("classpath:application.properties")
 public class JwtRequestFilter extends OncePerRequestFilter {
-    @Autowired
+
     private MyUserDetailsService userDetailsService;
 
-    @Autowired
     private JwtUtil jwtUtil;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
@@ -67,5 +66,15 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+   @Autowired
+   public void setJwtUtil(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Autowired
+    public void setUserDetailsService(MyUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 }

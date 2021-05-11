@@ -120,7 +120,7 @@ public class AppointmentService {
         }
     }
 
-    public Appointment mapAppointments(AppointmentRequestDTO dto) {
+    private Appointment mapAppointments(AppointmentRequestDTO dto) {
         Appointment app = new Appointment();
         List<Activity> currentActivities = new ArrayList<>();
         for (String name : dto.getActivitiesName()) {

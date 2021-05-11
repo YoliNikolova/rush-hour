@@ -31,8 +31,8 @@ public class ActivityController {
     @Secured("ROLE_ADMIN")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addNewActivity(@RequestBody @Valid ActivityDTO activity) {
-        activityService.add(activity);
+    public ActivityDTO addNewActivity(@RequestBody @Valid ActivityDTO activity) {
+        return activityService.add(activity);
     }
 
     @Secured("ROLE_ADMIN")

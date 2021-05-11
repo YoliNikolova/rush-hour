@@ -8,6 +8,12 @@ public class UserResponseDTO {
     public UserResponseDTO(){
     }
 
+    public UserResponseDTO(String firstName,String lastName,String email){
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email=email;
+    }
+
     public String getEmail() {
         return email;
     }
