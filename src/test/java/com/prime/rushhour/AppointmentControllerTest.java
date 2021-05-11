@@ -44,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,16 +83,14 @@ public class AppointmentControllerTest {
         list.add(new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga"))));
         list.add(new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 10, 17, 15), LocalDateTime.of(2021, 05, 10, 18, 45), Arrays.asList(new Activity("Fitness"))));
 
-        Mockito.when(appointmentService.getAll(any(Pageable.class), any(MyUserDetails.class))).thenReturn(list);
+        when(appointmentService.getAll(any(Pageable.class), any(MyUserDetails.class))).thenReturn(list);
 
         String url = "/appointments";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON).with(user(admin));
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
-
         String actualResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(actualResponse);
-
         String expectedResponse = objectMapper.writeValueAsString(list);
 
         assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
@@ -101,16 +100,14 @@ public class AppointmentControllerTest {
     public void getByIdShouldReturnAppointment() throws Exception {
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
 
-        Mockito.when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
+        when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON).with(user(user));
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
-
         String actualResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(actualResponse);
-
         String expectedResponse = objectMapper.writeValueAsString(appResponse);
 
         assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
@@ -118,10 +115,10 @@ public class AppointmentControllerTest {
 
     @Test
     public void getByIdShouldThrowForbiddenException() throws Exception {
-        Mockito.when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenThrow(ForbiddenException.class);
+        when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenThrow(ForbiddenException.class);
+
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON).with(user(user));
-
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isForbidden()).andReturn();
 
         assertTrue(mvcResult.getResolvedException() instanceof ForbiddenException);
@@ -129,10 +126,10 @@ public class AppointmentControllerTest {
 
     @Test
     public void getByIdShouldThrowNotFoundException() throws Exception {
-        Mockito.when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentNotFoundException.class);
+        when(appointmentService.getById(anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentNotFoundException.class);
+
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON).with(user(user));
-
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
         assertTrue(mvcResult.getResolvedException() instanceof AppointmentNotFoundException);
@@ -143,7 +140,7 @@ public class AppointmentControllerTest {
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Fitness")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenReturn(appResponse);
+        when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenReturn(appResponse);
 
         String url = "/appointments";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -163,7 +160,7 @@ public class AppointmentControllerTest {
     public void createNewAppointmentThrowActivityNotFound() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenThrow(ActivityNotFoundException.class);
+        when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenThrow(ActivityNotFoundException.class);
 
         String url = "/appointments";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -181,7 +178,7 @@ public class AppointmentControllerTest {
     public void createNewAppointmentThrowExistingAppointment() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenThrow(AppointmentExistsException.class);
+        when(appointmentService.add(any(AppointmentRequestDTO.class), anyInt())).thenThrow(AppointmentExistsException.class);
 
         String url = "/appointments";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -189,7 +186,6 @@ public class AppointmentControllerTest {
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(appRequest))
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(user(user));
-
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isConflict()).andReturn();
 
         assertTrue(result.getResolvedException() instanceof AppointmentExistsException);
@@ -208,7 +204,7 @@ public class AppointmentControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(appointmentService, Mockito.times(0)).updateById(appRequest, 1, user);
+        verify(appointmentService, Mockito.times(0)).updateById(appRequest, 1, user);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -218,7 +214,7 @@ public class AppointmentControllerTest {
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -245,7 +241,7 @@ public class AppointmentControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(appointmentService, Mockito.times(0)).updateById(appRequest, 1, user);
+        verify(appointmentService, Mockito.times(0)).updateById(appRequest, 1, user);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -255,7 +251,7 @@ public class AppointmentControllerTest {
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 6, 5, 14, 15), LocalDateTime.of(2021, 6, 05, 16, 45), Arrays.asList(new Activity("Yoga")));
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), 2, Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenReturn(appResponse);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -273,7 +269,7 @@ public class AppointmentControllerTest {
     public void updateAppointmentByUserThrowForbiddenException() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), 2, Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(ForbiddenException.class);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(ForbiddenException.class);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -291,7 +287,7 @@ public class AppointmentControllerTest {
     public void updateAppointmentThrowAppointmentNotFoundException() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentNotFoundException.class);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentNotFoundException.class);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -309,7 +305,7 @@ public class AppointmentControllerTest {
     public void updateAppointmentThrowActivityNotFoundException() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(ActivityNotFoundException.class);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(ActivityNotFoundException.class);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -327,7 +323,7 @@ public class AppointmentControllerTest {
     public void updateAppointmentThrowExistingAppointment() throws Exception {
         AppointmentRequestDTO appRequest = new AppointmentRequestDTO(LocalDateTime.of(2021, 6, 5, 14, 15), Arrays.asList("Fitness"));
 
-        Mockito.when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentExistsException.class);
+        when(appointmentService.updateById(any(AppointmentRequestDTO.class), anyInt(), any(MyUserDetails.class))).thenThrow(AppointmentExistsException.class);
 
         String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -343,38 +339,38 @@ public class AppointmentControllerTest {
 
     @Test
     public void deleteByIdSuccess() throws Exception {
-        Mockito.doNothing().when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
+        doNothing().when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
 
         String url = "/appointments/1";
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON).with(user(user));
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         int status = result.getResponse().getStatus();
-        Mockito.verify(appointmentService, Mockito.times(1)).delete(1, user);
+
+        verify(appointmentService, Mockito.times(1)).delete(1, user);
         assertEquals(status, HttpStatus.OK.value());
     }
 
     @Test
     public void deleteByIdThrowNotFoundException() throws Exception {
-        Mockito.doThrow(AppointmentNotFoundException.class).when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
-        String url = "/appointments/1";
+        doThrow(AppointmentNotFoundException.class).when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
 
+        String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON).with(user(user));
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
-        Mockito.verify(appointmentService, Mockito.times(1)).delete(1, user);
+        verify(appointmentService, Mockito.times(1)).delete(1, user);
         assertTrue(result.getResolvedException() instanceof AppointmentNotFoundException);
     }
 
     @Test
     public void deleteByIdThrowForbiddenException() throws Exception {
-        Mockito.doThrow(ForbiddenException.class).when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
-        String url = "/appointments/1";
+        doThrow(ForbiddenException.class).when(appointmentService).delete(anyInt(), any(MyUserDetails.class));
 
+        String url = "/appointments/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON).with(user(user));
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isForbidden()).andReturn();
 
-        Mockito.verify(appointmentService, Mockito.times(1)).delete(1, user);
+        verify(appointmentService, Mockito.times(1)).delete(1, user);
         assertTrue(result.getResolvedException() instanceof ForbiddenException);
     }
 }

@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -63,16 +64,14 @@ public class UserControllerTest {
         listUsers.add(new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg"));
         listUsers.add(new UserResponseDTO("Vanesa", "Angelova", "nesi@abv.bg"));
 
-        Mockito.when(userService.getAll(any(Pageable.class))).thenReturn(listUsers);
+        when(userService.getAll(any(Pageable.class))).thenReturn(listUsers);
 
         String url = "/users";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-
         String actualResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(actualResponse);
-
         String expectedResponse = objectMapper.writeValueAsString(listUsers);
 
         assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
@@ -82,16 +81,14 @@ public class UserControllerTest {
     public void getUserByIdShouldReturnUser() throws Exception {
         UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
 
-        Mockito.when(userService.getById(Mockito.anyInt())).thenReturn(user);
+        when(userService.getById(Mockito.anyInt())).thenReturn(user);
 
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-
         String actualResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(actualResponse);
-
         String expectedResponse = objectMapper.writeValueAsString(user);
 
         assertThat(actualResponse, equalToIgnoringWhiteSpace(expectedResponse));
@@ -99,7 +96,8 @@ public class UserControllerTest {
 
     @Test
     public void getUserByIdShouldThrowException() throws Exception {
-        Mockito.when(userService.getById(anyInt())).thenThrow(UserNotFoundException.class);
+        when(userService.getById(anyInt())).thenThrow(UserNotFoundException.class);
+
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
@@ -110,8 +108,9 @@ public class UserControllerTest {
     @Test
     public void createNewUserSuccess() throws Exception {
         UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
-        Mockito.when(userService.add(any(UserRequestDTO.class))).thenReturn(user);
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("ROLE_USER")));
+
+        when(userService.add(any(UserRequestDTO.class))).thenReturn(user);
 
         String url = "/users";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -128,9 +127,9 @@ public class UserControllerTest {
     @Test
     public void updateUserSuccess() throws Exception {
         UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("ROLE_USER")));
 
-        Mockito.when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenReturn(user);
+        when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenReturn(user);
 
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -145,9 +144,9 @@ public class UserControllerTest {
 
     @Test
     public void updateUserShouldThrowException() throws Exception {
-        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
+        UserRequestDTO userForRequest = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("ROLE_USER")));
 
-        Mockito.when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenThrow(UserNotFoundException.class);
+        when(userService.updateById(any(UserRequestDTO.class), anyInt())).thenThrow(UserNotFoundException.class);
 
         String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -162,26 +161,26 @@ public class UserControllerTest {
 
     @Test
     public void deleteByIdSuccess() throws Exception {
-        Mockito.doNothing().when(userService).delete(anyInt());
+        doNothing().when(userService).delete(anyInt());
 
         String url = "/users/1";
-
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         int status = result.getResponse().getStatus();
-        Mockito.verify(userService, Mockito.times(1)).delete(1);
+
+        verify(userService, Mockito.times(1)).delete(1);
         assertEquals(status, HttpStatus.OK.value());
     }
 
     @Test
     public void deleteByIdThrowException() throws Exception {
-        Mockito.doThrow(UserNotFoundException.class).when(userService).delete(anyInt());
-        String url = "/users/1";
+        doThrow(UserNotFoundException.class).when(userService).delete(anyInt());
 
+        String url = "/users/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
-        Mockito.verify(userService, Mockito.times(1)).delete(1);
+        verify(userService, Mockito.times(1)).delete(1);
         assertTrue(result.getResolvedException() instanceof UserNotFoundException);
     }
 }

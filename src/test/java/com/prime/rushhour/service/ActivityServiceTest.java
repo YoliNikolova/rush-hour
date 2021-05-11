@@ -45,8 +45,8 @@ public class ActivityServiceTest {
     @Test
     public void addNewActivitySuccess() {
         when(activityRepository.save(any(Activity.class))).thenReturn(activity);
-        Mockito.when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
-        Mockito.when(modelMapper.map(activity, ActivityDTO.class)).thenReturn(activityDTO);
+        when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
+        when(modelMapper.map(activity, ActivityDTO.class)).thenReturn(activityDTO);
         ActivityDTO addActivity = activityService.add(activityDTO);
 
         assertEquals(addActivity.getName(), activity.getName());
@@ -55,7 +55,7 @@ public class ActivityServiceTest {
     @Test
     public void getActivityByIdSuccess() {
         when(activityRepository.findById(anyInt())).thenReturn(Optional.of(activity));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(activityDTO);
+        when(modelMapper.map(any(), any())).thenReturn(activityDTO);
         ActivityDTO activityById = activityService.getById(anyInt());
         assertEquals(activityDTO.getName(), activityById.getName());
         assertEquals(activity.getName(), activityById.getName());
@@ -83,7 +83,7 @@ public class ActivityServiceTest {
         when(activityRepository.save(any(Activity.class))).thenReturn(activity);
         when(activityRepository.existsById(1)).thenReturn(true);
 
-        Mockito.when(modelMapper.map(activity, ActivityDTO.class)).thenReturn(activityDTO);
+        when(modelMapper.map(activity, ActivityDTO.class)).thenReturn(activityDTO);
         ActivityDTO updateById = activityService.updateById(activityDTO, 1);
 
         assertEquals(updateById.getName(), activity.getName());
@@ -91,7 +91,7 @@ public class ActivityServiceTest {
 
     @Test(expected = ActivityNotFoundException.class)
     public void updateActivityByIdThrowException() {
-        Mockito.when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
+        when(modelMapper.map(activityDTO, Activity.class)).thenReturn(activity);
         activity.setId(1);
         when(activityRepository.existsById(1)).thenReturn(false);
         activityService.updateById(activityDTO, 1);

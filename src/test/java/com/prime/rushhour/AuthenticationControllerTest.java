@@ -2,18 +2,14 @@ package com.prime.rushhour;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.prime.rushhour.controllers.AppointmentController;
 import com.prime.rushhour.controllers.AuthenticationController;
 import com.prime.rushhour.exception.ForbiddenException;
 import com.prime.rushhour.exception.ThisEmailAlreadyExistsException;
-import com.prime.rushhour.exception.UserNotFoundException;
 import com.prime.rushhour.models.*;
 import com.prime.rushhour.security.JwtUtil;
 import com.prime.rushhour.security.MyUserDetails;
 import com.prime.rushhour.security.MyUserDetailsService;
-import com.prime.rushhour.services.AppointmentService;
 import com.prime.rushhour.services.UserService;
-import net.bytebuddy.asm.Advice;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -39,6 +35,7 @@ import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -71,8 +68,8 @@ public class AuthenticationControllerTest {
         String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5b2xpQGFidi5iZyIsImlhdCI6MTYxOTc3NDYxMCwiZXhwIjoxNjE5Nzc2NDEwfQ.3UgMjA_iTu6rcog9WBOrGk1jrN6CaZhguQXGZdiufzEVm7peRt_H-3XbRvB5QqtbCYOpoBAd3m5rBEfuZh9Yzg";
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(jwt);
 
-        Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        Mockito.when(jwtUtil.createToken(authentication)).thenReturn(jwt);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(jwtUtil.createToken(authentication)).thenReturn(jwt);
 
         String url = "/authenticate";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -90,7 +87,7 @@ public class AuthenticationControllerTest {
     public void authenticateWithTokenThrowException() throws Exception {
         AuthenticationRequest authRequest = new AuthenticationRequest("yoli@abv.bg", "yoli9898");
 
-        Mockito.when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(ForbiddenException.class);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(ForbiddenException.class);
 
         String url = "/authenticate";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -108,7 +105,7 @@ public class AuthenticationControllerTest {
         RegisterRequest reg = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
         UserResponseDTO user = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
 
-        Mockito.when(userService.registerUser(any(RegisterRequest.class))).thenReturn(user);
+        when(userService.registerUser(any(RegisterRequest.class))).thenReturn(user);
 
         String url = "/register";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -126,7 +123,7 @@ public class AuthenticationControllerTest {
     public void registerThrowException() throws Exception {
         RegisterRequest reg = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
 
-        Mockito.when(userService.registerUser(any(RegisterRequest.class))).thenThrow(ThisEmailAlreadyExistsException.class);
+        when(userService.registerUser(any(RegisterRequest.class))).thenThrow(ThisEmailAlreadyExistsException.class);
 
         String url = "/register";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -151,7 +148,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -166,7 +164,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -181,7 +180,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -196,7 +196,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -211,7 +212,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -227,7 +229,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -242,7 +245,8 @@ public class AuthenticationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(userService, Mockito.times(0)).registerUser(reg);
+
+        verify(userService, Mockito.times(0)).registerUser(reg);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 }

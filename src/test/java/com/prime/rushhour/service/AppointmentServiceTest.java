@@ -86,7 +86,7 @@ public class AppointmentServiceTest {
         AppointmentResponseDTO appResponse = new AppointmentResponseDTO(LocalDateTime.of(2021, 5, 5, 14, 15), LocalDateTime.of(2021, 05, 05, 16, 45), Arrays.asList(new Activity("Fitness"), new Activity("Yoga")));
 
         when(appointmentRepository.findById(anyInt())).thenReturn(Optional.of(app));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(appResponse);
+        when(modelMapper.map(any(), any())).thenReturn(appResponse);
         app.setUser(user);
         app.getUser().setId(myUserDetails.getId());
 
@@ -122,7 +122,7 @@ public class AppointmentServiceTest {
         app.setUser(user);
         when(activityRepository.findByName(anyString())).thenReturn(Optional.of(activity));
         when(appointmentRepository.findAllByUserId(anyInt())).thenReturn(Arrays.asList(app));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(appResponse);
+        when(modelMapper.map(any(), any())).thenReturn(appResponse);
 
         AppointmentResponseDTO response = appointmentService.add(appRequest, 2);
         assertEquals(response.getId(), app.getId());
@@ -171,7 +171,7 @@ public class AppointmentServiceTest {
         oldAppointment.setUser(user);
         when(activityRepository.findByName(anyString())).thenReturn(Optional.of(activity));
         when(appointmentRepository.findAllByUserId(anyInt())).thenReturn(Arrays.asList(newAppointment));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(appResponse);
+        when(modelMapper.map(any(), any())).thenReturn(appResponse);
 
         AppointmentResponseDTO response = appointmentService.updateById(appRequest, 2, myUserDetails);
         assertEquals(response.getId(), oldAppointment.getId());
@@ -226,7 +226,7 @@ public class AppointmentServiceTest {
         oldAppointment.getUser().setId(myUserDetails.getId());
         when(activityRepository.findByName(anyString())).thenReturn(Optional.of(activity));
         when(appointmentRepository.findAllByUserId(anyInt())).thenReturn(Arrays.asList(newAppointment));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(appResponse);
+        when(modelMapper.map(any(), any())).thenReturn(appResponse);
 
         AppointmentResponseDTO response = appointmentService.updateById(appRequest, 2, myUserDetails);
         assertEquals(response.getId(), oldAppointment.getId());

@@ -35,6 +35,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ActivityController.class)
@@ -61,7 +62,7 @@ public class ActivityControllerTest {
         list.add(new ActivityDTO("Fitness", 60, 5.00));
         list.add(new ActivityDTO("Manicure", 60, 20.00));
 
-        Mockito.when(activityService.getAll(any(Pageable.class))).thenReturn(list);
+        when(activityService.getAll(any(Pageable.class))).thenReturn(list);
 
         String url = "/activities";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
@@ -80,22 +81,23 @@ public class ActivityControllerTest {
     @WithMockUser(authorities = {"ROLE_ADMIN", "ROLE_USER"})
     public void getActivityByIdShouldReturnActivity() throws Exception {
         ActivityDTO activity = new ActivityDTO("Fitness", 60, 5.00);
-        Mockito.when(activityService.getById(anyInt())).thenReturn(activity);
+
+        when(activityService.getById(anyInt())).thenReturn(activity);
         String url = "/activities/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
         String actualResponse = result.getResponse().getContentAsString();
         System.out.println(actualResponse);
-
         String expected = objectMapper.writeValueAsString(activity);
+
         assertThat(actualResponse, equalToIgnoringWhiteSpace(expected));
     }
 
     @Test
     @WithMockUser(authorities = {"ROLE_ADMIN", "ROLE_USER"})
     public void getActivityByIdShouldThrowException() throws Exception {
-        Mockito.when(activityService.getById(anyInt())).thenThrow(ActivityNotFoundException.class);
+        when(activityService.getById(anyInt())).thenThrow(ActivityNotFoundException.class);
         String url = "/activities/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
@@ -107,8 +109,8 @@ public class ActivityControllerTest {
     @WithMockUser(authorities = "ROLE_ADMIN")
     public void createNewActivitySuccess() throws Exception {
         ActivityDTO activity = new ActivityDTO("Fitness", 60, 5.00);
-        Mockito.when(activityService.add(any(ActivityDTO.class))).thenReturn(activity);
 
+        when(activityService.add(any(ActivityDTO.class))).thenReturn(activity);
         String url = "/activities";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post(url)
@@ -134,7 +136,7 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).add(activity);
+        verify(activityService, Mockito.times(0)).add(activity);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -151,7 +153,7 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).add(activity);
+        verify(activityService, Mockito.times(0)).add(activity);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -168,7 +170,7 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).add(activity);
+        verify(activityService, Mockito.times(0)).add(activity);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -177,7 +179,7 @@ public class ActivityControllerTest {
     public void updateActivitySuccess() throws Exception {
         ActivityDTO updateActivity = new ActivityDTO("Fitness", 90, 8.00);
 
-        Mockito.when(activityService.updateById(any(ActivityDTO.class), anyInt())).thenReturn(updateActivity);
+        when(activityService.updateById(any(ActivityDTO.class), anyInt())).thenReturn(updateActivity);
 
         String url = "/activities/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -195,7 +197,7 @@ public class ActivityControllerTest {
     public void updateActivityShouldThrowException() throws Exception {
         ActivityDTO updateActivity = new ActivityDTO("Fitness", 90, 8.00);
 
-        Mockito.when(activityService.updateById(any(ActivityDTO.class), anyInt())).thenThrow(ActivityNotFoundException.class);
+        when(activityService.updateById(any(ActivityDTO.class), anyInt())).thenThrow(ActivityNotFoundException.class);
 
         String url = "/activities/1";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -221,7 +223,7 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).updateById(activity, 1);
+        verify(activityService, Mockito.times(0)).updateById(activity, 1);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -238,7 +240,7 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).updateById(activity, 1);
+        verify(activityService, Mockito.times(0)).updateById(activity, 1);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
@@ -255,34 +257,34 @@ public class ActivityControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isBadRequest()).andReturn();
         MockHttpServletResponse response = result.getResponse();
-        Mockito.verify(activityService, Mockito.times(0)).updateById(activity, 1);
+        verify(activityService, Mockito.times(0)).updateById(activity, 1);
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
     }
 
     @Test
     @WithMockUser(authorities = "ROLE_ADMIN")
     public void deleteByIdSuccess() throws Exception {
-        Mockito.doNothing().when(activityService).delete(anyInt());
+        doNothing().when(activityService).delete(anyInt());
 
         String url = "/activities/1";
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
         int status = result.getResponse().getStatus();
-        Mockito.verify(activityService, Mockito.times(1)).delete(1);
+        verify(activityService, Mockito.times(1)).delete(1);
         assertEquals(status, HttpStatus.OK.value());
     }
 
     @Test
     @WithMockUser(authorities = "ROLE_ADMIN")
     public void deleteByIdThrowException() throws Exception {
-        Mockito.doThrow(ActivityNotFoundException.class).when(activityService).delete(anyInt());
+        doThrow(ActivityNotFoundException.class).when(activityService).delete(anyInt());
         String url = "/activities/1";
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders.delete(url).accept(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andExpect(status().isNotFound()).andReturn();
 
-        Mockito.verify(activityService, Mockito.times(1)).delete(1);
+        verify(activityService, Mockito.times(1)).delete(1);
         assertTrue(result.getResolvedException() instanceof ActivityNotFoundException);
     }
 }

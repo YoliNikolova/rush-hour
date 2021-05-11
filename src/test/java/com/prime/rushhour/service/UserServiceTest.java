@@ -53,7 +53,7 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
 
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-        Mockito.when(modelMapper.map(any(), any())).thenReturn(responseUser);
+        when(modelMapper.map(any(), any())).thenReturn(responseUser);
         UserResponseDTO userById = userService.getById(anyInt());
         assertEquals(responseUser.getFirstName(), userById.getFirstName());
         assertEquals(responseUser.getEmail(), userById.getEmail());
@@ -80,10 +80,10 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
+        when(modelMapper.map(requestUser, User.class)).thenReturn(user);
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(new Role()));
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO addUser = userService.add(requestUser);
 
         assertSame(addUser.getEmail(), requestUser.getEmail());
@@ -94,10 +94,10 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
+        when(modelMapper.map(requestUser, User.class)).thenReturn(user);
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO addUser = userService.add(requestUser);
 
         assertSame(addUser.getEmail(), requestUser.getEmail());
@@ -108,12 +108,12 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
+        when(modelMapper.map(requestUser, User.class)).thenReturn(user);
         when(userRepository.existsById(1)).thenReturn(true);
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(new Role()));
         user.setId(1);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.updateById(requestUser, 1);
 
         assertSame(response.getEmail(), requestUser.getEmail());
@@ -124,12 +124,12 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
+        when(modelMapper.map(requestUser, User.class)).thenReturn(user);
         when(userRepository.existsById(1)).thenReturn(true);
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
         user.setId(1);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.updateById(requestUser, 1);
 
         assertSame(response.getEmail(), requestUser.getEmail());
@@ -139,7 +139,7 @@ public class UserServiceTest {
     public void updateUserThrowException() {
         UserRequestDTO requestUser = new UserRequestDTO("Yoli", "Nikolova", "yoli@abv.bg", "yoli9818", Arrays.asList(new Role("User")));
 
-        Mockito.when(modelMapper.map(requestUser, User.class)).thenReturn(user);
+        when(modelMapper.map(requestUser, User.class)).thenReturn(user);
         userService.updateById(requestUser, 1);
 
         verify(userRepository, times(0)).save(user);
@@ -151,12 +151,12 @@ public class UserServiceTest {
         RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
         Role role = new Role("ROLE_USER");
 
-        Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
+        when(modelMapper.map(request, User.class)).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(roleRepository.findByName(anyString())).thenReturn(Optional.of(role));
         user.setRoles(Collections.singletonList(role));
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.registerUser(request);
 
         assertSame(response.getEmail(), request.getEmail());
@@ -167,12 +167,12 @@ public class UserServiceTest {
         UserResponseDTO responseUser = new UserResponseDTO("Yoli", "Nikolova", "yoli@abv.bg");
         RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
 
-        Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
+        when(modelMapper.map(request, User.class)).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
         user.setRoles(Collections.singletonList(new Role("USER_ROLE")));
         when(userRepository.save(any(User.class))).thenReturn(user);
-        Mockito.when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(responseUser);
         UserResponseDTO response = userService.registerUser(request);
 
         assertSame(response.getEmail(), request.getEmail());
@@ -182,7 +182,7 @@ public class UserServiceTest {
     public void registerUserThrowException() {
         RegisterRequest request = new RegisterRequest("Yoli", "Nikolova", "yoli@abv.bg", "yoli9898");
 
-        Mockito.when(modelMapper.map(request, User.class)).thenReturn(user);
+        when(modelMapper.map(request, User.class)).thenReturn(user);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         userService.registerUser(request);
 

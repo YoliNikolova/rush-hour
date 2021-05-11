@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoleServiceTest {
@@ -29,7 +29,7 @@ public class RoleServiceTest {
         Role role = new Role("ROLE_ADMIN");
         when(roleRepository.save(role)).thenReturn(role);
         roleService.add(role);
-        Mockito.verify(roleRepository, Mockito.times(1)).save(role);
+        verify(roleRepository, Mockito.times(1)).save(role);
     }
 
     @Test

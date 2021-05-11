@@ -28,6 +28,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -53,14 +54,13 @@ public class RoleControllerTest {
     public void getAllRoles() throws Exception {
         List<Role> list = Arrays.asList(new Role("ROLE_ADMIN"), new Role("ROLE_USER"));
 
-        Mockito.when(roleService.getAll()).thenReturn(list);
+        when(roleService.getAll()).thenReturn(list);
         String url = "/roles";
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(url).accept(MediaType.APPLICATION_JSON);
 
         List<String> namesRole = Arrays.asList("ROLE_ADMIN", "ROLE_USER");
 
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andExpect(status().isOk()).andReturn();
-
         String actualResponse = mvcResult.getResponse().getContentAsString();
         System.out.println(actualResponse);
         String expectedResponse = objectMapper.writeValueAsString(namesRole);
@@ -71,7 +71,8 @@ public class RoleControllerTest {
     @Test
     public void createRoleSuccess() throws Exception {
         Role role = new Role("ROLE_USER");
-        Mockito.doNothing().when(roleService).add(role);
+
+        doNothing().when(roleService).add(role);
 
         String url = "/roles";
         RequestBuilder requestBuilder = MockMvcRequestBuilders
