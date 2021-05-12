@@ -1,3 +1,4 @@
+SPRING PROJECT
 
 Rush Hour is appointment scheduling software. It can be used in a variety of areas, i.e. medical services, beauty and wellness, sport. 
 
